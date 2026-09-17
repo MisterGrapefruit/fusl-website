@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aanbod — FUSL</title>
+<meta name="description" content="Blader door meubels van aangesloten winkels — showroommodellen en producten in de verkoop.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <img src="images/fusl-logo.jpg" alt="FUSL logo">
+      FUSL — First Use, Second Life
+    </a>
+    <div class="nav-links">
+      <a href="over-ons.html#hoe-het-werkt">Hoe het werkt</a>
+      <a href="aanbod.html">Aanbod</a>
+      <a href="over-ons.html#voor-winkels">Voor winkels</a>
+      <a href="stijl.html" class="btn btn-accent">Ontdek je stijl</a>
+    </div>
+  </div>
+</nav>
+
+<header class="aanbod-header">
+  <div class="container">
+    <h1>Het aanbod</h1>
+    <p>Meubels van winkels in de FUSL-community — showroommodellen, producten die uit de verkoop gaan, en kortingsacties van aangesloten winkels. <em>Dit combineert voorbeelddata met live winkelaanbod zodra dat is aangesloten.</em></p>
+    <div class="profile-banner" id="profile-banner" style="display: none;">
+      <span id="profile-banner-text"></span>
+      <a href="vragenlijst.html">Wijzig je voorkeuren</a>
+    </div>
+  </div>
+</header>
+
+<div class="filter-bar">
+  <div class="container">
+    <input type="text" class="search-input" id="search-input" placeholder="Zoek op meubel of winkel…">
+    <div class="filter-group" id="category-filters">
+      <button class="pill active" data-category="alles" type="button">Alles</button>
+      <button class="pill" data-category="bank" type="button">Bank</button>
+      <button class="pill" data-category="eettafel" type="button">Eettafel</button>
+      <button class="pill" data-category="kast" type="button">Kast</button>
+      <button class="pill" data-category="stoel" type="button">Stoel</button>
+    </div>
+    <div class="filter-group" id="type-filters">
+      <button class="pill active" data-type="alles" type="button">Alles</button>
+      <button class="pill" data-type="keten" type="button">Ketens</button>
+      <button class="pill" data-type="lokaal" type="button">Lokale winkels</button>
+    </div>
+    <div class="filter-group" id="deal-filters">
+      <button class="pill" data-deal="korting" type="button">🏷️ Op korting</button>
+    </div>
+    <div class="filter-group" id="fav-filters">
+      <button class="pill" data-fav="favorieten" type="button">❤️ Favorieten</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="product-grid" id="product-grid"></div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-brand">
+      <img src="images/fusl-logo.jpg" alt="FUSL logo">
+      <div>
+        <div class="name">FUSL — First Use, Second Life</div>
+        <div class="tagline">Kwaliteit. Duurzaam. Betaalbaar.</div>
+      </div>
+    </div>
+    <div class="footer-note">Duurzaamheid en gemak</div>
+  </div>
+</footer>
+
+<script src="js/profile.js"></script>
+<script src="js/favorites.js"></script>
+<script src="js/aanbod-data.js"></script>
+<script>
+  var colorHex = {};
+  FUSL_COLORS.forEach(function (c) { colorHex[c.name] = c.hex; });
+
+  var state = { search: '', category: 'alles', type: 'alles', deal: 'alles', favoritesOnly: false };
+  var profile = fuslGetProfile();
+  var PRODUCTS = SAMPLE_PRODUCTS; // wordt aangevuld/vervangen zodra live winkelaanbod geladen is
+
+  function setupProfileBanner() {
+    var hasColors = profile.colors && Object.keys(profile.colors).length > 0;
+    if (!profile.roomStyle && !hasColors) return;
+    var banner = document.getElementById('profile-banner');
+    var text = document.getElementById('profile-banner-text');
+    var parts = [];
+    if (profile.roomStyle) parts.push('stijl ' + profile.roomStyle);
+    if (hasColors) parts.push(Object.keys(profile.colors).length + ' kleurvoorkeur(en)');
+    text.textContent = 'Gefilterd op basis van jouw profiel: ' + parts.join(', ') + '.';
+    banner.style.display = 'flex';
+  }
+
+  function matchesProfile(product) {
+    if (profile.roomStyle && product.style === profile.roomStyle) return true;
+    if (profile.colors) {
+      var wanted = profile.colors[product.category];
+      if (wanted && wanted === product.color) return true;
+    }
+    return false;
+  }
+
+  function render() {
+    var grid = document.getElementById('product-grid');
+    grid.innerHTML = '';
+
+    var filtered = PRODUCTS.filter(function (p) {
+      if (state.category !== 'alles' && p.category !== state.category) return false;
+      if (state.type !== 'alles' && p.type !== state.type) return false;
+      if (state.deal === 'korting' && !p.salePrice) return false;
+      if (state.favoritesOnly && !fuslIsFavorite(p.id)) return false;
+      if (state.search) {
+        var q = state.search.toLowerCase();
+        if (p.name.toLowerCase().indexOf(q) === -1 && p.store.toLowerCase().indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    if (profile.roomStyle || (profile.colors && Object.keys(profile.colors).length)) {
+      filtered.sort(function (a, b) {
+        return (matchesProfile(b) ? 1 : 0) - (matchesProfile(a) ? 1 : 0);
+      });
+    }
+
+    if (filtered.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.textContent = 'Geen meubels gevonden binnen deze filters.';
+      grid.appendChild(empty);
+      return;
+    }
+
+    filtered.forEach(function (p) {
+      var card = document.createElement('div');
+      card.className = 'product-card';
+
+      var swatch = document.createElement('div');
+      swatch.className = 'product-swatch';
+      swatch.style.background = colorHex[p.color] || '#ccc';
+
+      var statusEl = document.createElement('span');
+      statusEl.className = 'product-status';
+      statusEl.textContent = p.status;
+      swatch.appendChild(statusEl);
+
+      if (matchesProfile(p)) {
+        var matchEl = document.createElement('span');
+        matchEl.className = 'match-badge';
+        matchEl.textContent = 'Past bij jouw stijl';
+        swatch.appendChild(matchEl);
+      }
+
+      if (p.salePrice) {
+        var dealEl = document.createElement('span');
+        dealEl.className = 'deal-badge';
+        var pct = Math.round((1 - p.salePrice / p.price) * 100);
+        dealEl.textContent = '🏷️ -' + pct + '%';
+        swatch.appendChild(dealEl);
+      }
+
+      var labelEl = document.createElement('span');
+      labelEl.className = 'placeholder-label';
+      labelEl.textContent = p.color;
+      swatch.appendChild(labelEl);
+
+      var favBtn = document.createElement('button');
+      favBtn.type = 'button';
+      favBtn.className = 'fav-btn' + (fuslIsFavorite(p.id) ? ' active' : '');
+      favBtn.setAttribute('data-fav-id', p.id);
+      favBtn.setAttribute('aria-label', 'Bewaar als favoriet');
+      favBtn.textContent = fuslIsFavorite(p.id) ? '♥' : '♡';
+      swatch.appendChild(favBtn);
+
+      var priceHtml = p.salePrice
+        ? '<span class="product-price-old">€ ' + p.price + '</span> <span class="product-price product-price-sale">€ ' + p.salePrice + '</span>'
+        : '<span class="product-price">€ ' + p.price + '</span>';
+
+      var body = document.createElement('div');
+      body.className = 'product-body';
+      body.innerHTML =
+        '<div class="product-name">' + p.name + '</div>' +
+        '<div class="product-store">' + p.store + ' <span class="badge ' + (p.type === 'lokaal' ? 'badge-local' : 'badge-chain') + '">' + (p.type === 'lokaal' ? 'Lokaal' : 'Keten') + '</span></div>' +
+        '<div class="product-style-tag">' + (p.style || '') + '</div>' +
+        '<div class="product-price-row">' + priceHtml + '</div>';
+
+      if (p.productUrl) {
+        var storeLink = document.createElement('a');
+        storeLink.className = 'btn-store-link';
+        storeLink.href = p.productUrl;
+        storeLink.target = '_blank';
+        storeLink.rel = 'noopener sponsored';
+        storeLink.textContent = 'Bekijk bij ' + p.store + ' →';
+        body.appendChild(storeLink);
+      }
+
+      card.appendChild(swatch);
+      card.appendChild(body);
+      grid.appendChild(card);
+    });
+  }
+
+  document.getElementById('search-input').addEventListener('input', function (e) {
+    state.search = e.target.value;
+    render();
+  });
+
+  document.getElementById('category-filters').addEventListener('click', function (e) {
+    if (!e.target.matches('.pill')) return;
+    state.category = e.target.getAttribute('data-category');
+    this.querySelectorAll('.pill').forEach(function (p) { p.classList.remove('active'); });
+    e.target.classList.add('active');
+    render();
+  });
+
+  document.getElementById('type-filters').addEventListener('click', function (e) {
+    if (!e.target.matches('.pill')) return;
+    state.type = e.target.getAttribute('data-type');
+    this.querySelectorAll('.pill').forEach(function (p) { p.classList.remove('active'); });
+    e.target.classList.add('active');
+    render();
+  });
+
+  document.getElementById('deal-filters').addEventListener('click', function (e) {
+    if (!e.target.matches('.pill')) return;
+    var deal = e.target.getAttribute('data-deal');
+    state.deal = e.target.classList.contains('active') ? 'alles' : deal;
+    this.querySelectorAll('.pill').forEach(function (p) { p.classList.remove('active'); });
+    if (state.deal !== 'alles') e.target.classList.add('active');
+    render();
+  });
+
+  document.getElementById('fav-filters').addEventListener('click', function (e) {
+    if (!e.target.matches('.pill')) return;
+    state.favoritesOnly = !e.target.classList.contains('active');
+    e.target.classList.toggle('active', state.favoritesOnly);
+    render();
+  });
+
+  document.getElementById('product-grid').addEventListener('click', function (e) {
+    if (!e.target.matches('.fav-btn')) return;
+    var id = e.target.getAttribute('data-fav-id');
+    fuslToggleFavorite(id);
+    var nowFavorite = fuslIsFavorite(id);
+    e.target.classList.toggle('active', nowFavorite);
+    e.target.textContent = nowFavorite ? '♥' : '♡';
+    if (state.favoritesOnly) render();
+  });
+
+  setupProfileBanner();
+  render();
+
+  // Live winkelaanbod (via tools/sync-feed.js -> data/aanbod.json) erbij laden
+  // zodra dat beschikbaar is; voorbeelddata blijft anders gewoon staan.
+  fuslLoadLiveListings(function (liveListings) {
+    PRODUCTS = liveListings.concat(SAMPLE_PRODUCTS);
+    render();
+  });
+</script>
+
+</body>
+</html>

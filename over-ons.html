@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Over ons — FUSL</title>
+<meta name="description" content="Waarom FUSL bestaat, hoe het platform werkt, en wat we willen bereiken.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <img src="images/fusl-logo.jpg" alt="FUSL logo">
+      FUSL — First Use, Second Life
+    </a>
+    <div class="nav-links">
+      <a href="over-ons.html#hoe-het-werkt">Hoe het werkt</a>
+      <a href="aanbod.html">Aanbod</a>
+      <a href="over-ons.html#voor-winkels">Voor winkels</a>
+      <a href="stijl.html" class="btn btn-accent">Ontdek je stijl</a>
+    </div>
+  </div>
+</nav>
+
+<header class="about-hero">
+  <div class="container">
+    <h1>Over FUSL</h1>
+  </div>
+</header>
+
+<section class="about-section">
+  <div class="container">
+    <h2>Ons verhaal</h2>
+    <p>FUSL biedt een platform én persoonlijke begeleiding waarmee winkels hun overtollige voorraad effectief kunnen afzetten via nieuwe, passende markten. Producten worden overzichtelijk per categorie aangeboden, zodat afnemers snel en gericht relevante aanbieders vinden. In combinatie met direct één-op-één contact zorgen we voor korte lijnen en duurzame samenwerkingen tussen aanbieders en afnemers.</p>
+    <p>We willen een concrete bijdrage leveren aan duurzaamheid binnen de meubelsector. Waar de focus vaak ligt op second life, geloven wij dat er ook veel winst te behalen is in het verlengen van de first life van producten. Nieuwe, ongebruikte producten verdienen het om daadwerkelijk gebruikt te worden — niet om ongebruikt in magazijnen te blijven liggen.</p>
+  </div>
+</section>
+
+<section class="about-section" id="hoe-het-werkt" style="background: white;">
+  <div class="container">
+    <h2>Hoe het werkt</h2>
+    <p>Winkels met een outletpagina kunnen we samenvoegen op FUSL. Met een lidmaatschap wordt een winkel onderdeel van de FUSL-community, en bij elk product staat nadrukkelijk van welke winkel het afkomstig is. Bezoekers kunnen daarbij aangeven of ze liever bij ketens of juist bij lokale winkels shoppen — zo steunen we bewust ook de lokale ondernemer.</p>
+    <p>Op de klantpagina geeft iedereen zijn eigen stijl aan. FUSL zoekt op basis daarvan alvast de bijpassende meubels, als opstapje dat je daarna verder kunt verfijnen.</p>
+  </div>
+</section>
+
+<section class="about-section">
+  <div class="container">
+    <h2>Onze doelen</h2>
+    <div class="goals-grid">
+      <div class="goal-card">
+        <h3>Betaalbaar</h3>
+        <p>Betaalbare meubels toegankelijk maken voor mensen.</p>
+      </div>
+      <div class="goal-card">
+        <h3>Gemak</h3>
+        <p>Het vinden van de juiste meubels zo makkelijk mogelijk maken.</p>
+      </div>
+      <div class="goal-card">
+        <h3>Duurzaamheid</h3>
+        <p>We onderzoeken doorlopend hoe we dit zo duurzaam mogelijk kunnen inrichten.</p>
+        <div class="stat-counter" id="stat-aanbod">–</div>
+        <div class="stat-counter-sub">meubels op dit moment vindbaar via FUSL</div>
+        <div class="placeholder-note">Concrete CO₂-doelen volgen nog — het cijfer hierboven is een live telling van het huidige aanbod.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about-section" id="voor-winkels" style="background: white;">
+  <div class="container">
+    <h2>Voor winkels</h2>
+    <p>Heeft jouw winkel een outletpagina of overtollige voorraad? Word onderdeel van de FUSL-community en bereik nieuwe, passende afnemers — met duidelijke vermelding van jouw winkel bij elk product.</p>
+
+    <form name="winkel-aanmelding" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/aanmelding-verzonden.html" class="signup-form">
+      <input type="hidden" name="form-name" value="winkel-aanmelding">
+      <p hidden><label>Niet invullen: <input name="bot-field"></label></p>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="winkelnaam">Naam winkel *</label>
+          <input type="text" id="winkelnaam" name="winkelnaam" required>
+        </div>
+        <div class="form-field">
+          <label for="contactpersoon">Contactpersoon *</label>
+          <input type="text" id="contactpersoon" name="contactpersoon" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="email">E-mailadres *</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-field">
+          <label for="winkeltype">Type winkel *</label>
+          <select id="winkeltype" name="winkeltype" required>
+            <option value="">Kies…</option>
+            <option value="lokaal">Lokale winkel</option>
+            <option value="keten">Keten</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="systeem">Welk kassa- of webshopsysteem gebruiken jullie?</label>
+        <select id="systeem" name="systeem">
+          <option value="">Weet ik (nog) niet</option>
+          <option value="shopify">Shopify</option>
+          <option value="woocommerce">WooCommerce</option>
+          <option value="lightspeed">Lightspeed</option>
+          <option value="ccvshop">CCV Shop</option>
+          <option value="myonlinestore">MyOnlineStore</option>
+          <option value="anders">Anders</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="toelichting">Vertel kort over jullie aanbod en eventuele kortingsacties</label>
+        <textarea id="toelichting" name="toelichting" rows="3"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-accent">Aanmelden</button>
+      <div class="form-note">We nemen na aanmelding persoonlijk contact op om de mogelijkheden en het lidmaatschap door te spreken.</div>
+    </form>
+  </div>
+</section>
+
+<section class="about-section">
+  <div class="container">
+    <h2>Wat mensen over FUSL zeggen</h2>
+    <p><em>Deze pagina is net live — hieronder staan voorbeeldteksten om de vormgeving te laten zien. Zodra er echte reacties van klanten en winkels binnenkomen, vervangen we deze door hun eigen woorden.</em></p>
+    <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-quote">Voorbeeldtekst — hier komt straks een echte reactie van een klant over hoe FUSL hen aan de juiste meubels hielp.</div>
+        <div class="testimonial-author">— Voorbeeld, klant (nog te vervangen)</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-quote">Voorbeeldtekst — hier komt straks een echte reactie van een winkel over de samenwerking met FUSL.</div>
+        <div class="testimonial-author">— Voorbeeld, winkelpartner (nog te vervangen)</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-quote">Voorbeeldtekst — hier komt straks een echte reactie over een gevonden kortingsactie.</div>
+        <div class="testimonial-author">— Voorbeeld, klant (nog te vervangen)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-brand">
+      <img src="images/fusl-logo.jpg" alt="FUSL logo">
+      <div>
+        <div class="name">FUSL — First Use, Second Life</div>
+        <div class="tagline">Kwaliteit. Duurzaam. Betaalbaar.</div>
+      </div>
+    </div>
+    <div class="footer-note">Duurzaamheid en gemak</div>
+  </div>
+</footer>
+
+<script src="js/aanbod-data.js"></script>
+<script>
+  function fuslUpdateAanbodStat(count) {
+    var el = document.getElementById('stat-aanbod');
+    if (el) el.textContent = count;
+  }
+  fuslUpdateAanbodStat(SAMPLE_PRODUCTS.length);
+  fuslLoadLiveListings(function (liveListings) {
+    fuslUpdateAanbodStat(liveListings.length + SAMPLE_PRODUCTS.length);
+  });
+</script>
+
+</body>
+</html>

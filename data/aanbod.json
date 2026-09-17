@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-09-14T13:27:12.587Z",
+  "storeCount": 1,
+  "listingCount": 2,
+  "listings": [
+    {
+      "id": "woonstijl-verhoeven-WV-1001",
+      "externalId": "WV-1001",
+      "storeId": "woonstijl-verhoeven",
+      "storeName": "Woonstijl Verhoeven",
+      "storeType": "lokaal",
+      "name": "Hudson driezitsbank",
+      "category": "bank",
+      "color": "Groen",
+      "style": "Landelijk",
+      "price": 899,
+      "salePrice": 649,
+      "saleValidFrom": "2026-09-10T00:00",
+      "saleValidUntil": "2026-09-30T23:59",
+      "inStock": true,
+      "status": "Showroommodel, lichte gebruikssporen.",
+      "imageUrl": "https://example-winkel.nl/img/hudson-bank.jpg",
+      "productUrl": "https://example-winkel.nl/producten/hudson-driezitsbank",
+      "lastSynced": "2026-09-14T13:27:12.582Z"
+    },
+    {
+      "id": "woonstijl-verhoeven-WV-1002",
+      "externalId": "WV-1002",
+      "storeId": "woonstijl-verhoeven",
+      "storeName": "Woonstijl Verhoeven",
+      "storeType": "lokaal",
+      "name": "Vitrinekast landelijk",
+      "category": "kast",
+      "color": "Naturel hout",
+      "style": "Landelijk",
+      "price": 420,
+      "salePrice": null,
+      "saleValidFrom": null,
+      "saleValidUntil": null,
+      "inStock": true,
+      "status": "Showroommodel.",
+      "imageUrl": "https://example-winkel.nl/img/vitrinekast.jpg",
+      "productUrl": "https://example-winkel.nl/producten/vitrinekast-landelijk",
+      "lastSynced": "2026-09-14T13:27:12.582Z"
+    }
+  ]
+}

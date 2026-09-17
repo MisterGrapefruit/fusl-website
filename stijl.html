@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kies je stijl — FUSL</title>
+<meta name="description" content="Kies de kamerstijl die het meest op jouw smaak lijkt, zodat FUSL alvast gefilterde meubels voor je zoekt.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <img src="images/fusl-logo.jpg" alt="FUSL logo">
+      FUSL — First Use, Second Life
+    </a>
+    <div class="nav-links">
+      <a href="over-ons.html#hoe-het-werkt">Hoe het werkt</a>
+      <a href="aanbod.html">Aanbod</a>
+      <a href="over-ons.html#voor-winkels">Voor winkels</a>
+      <a href="stijl.html" class="btn btn-accent">Ontdek je stijl</a>
+    </div>
+  </div>
+</nav>
+
+<header class="style-header">
+  <div class="container">
+    <div class="style-mascot">
+      <img src="images/capy-face.png" alt="Capy, de FUSL-mascotte">
+    </div>
+    <div>
+      <div class="speech-bubble">Kies de kamer die het meest op jouw smaak lijkt — ik zoek de rest.</div>
+      <h1>Kies de stijl die bij jou past</h1>
+    </div>
+  </div>
+</header>
+
+<div class="style-page-bg">
+  <div class="container">
+    <div class="style-grid" id="style-grid">
+      <button class="style-card" type="button" data-style="Landelijk">
+        <img src="images/landelijk.jpg" alt="Landelijke woonstijl met natuursteen open haard en leren fauteuils">
+        <span class="style-label">Landelijk</span>
+      </button>
+      <button class="style-card" type="button" data-style="Beige">
+        <img src="images/beige.jpg" alt="Beige, zachte woonstijl">
+        <span class="style-label">Beige</span>
+      </button>
+      <button class="style-card selected" type="button" data-style="Scandinavisch">
+        <img src="images/scandinavisch.jpg" alt="Scandinavische woonstijl met lichte tinten en planten">
+        <span class="style-check">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12L10 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="style-label">Scandinavisch</span>
+      </button>
+      <button class="style-card" type="button" data-style="Industrieel">
+        <img src="images/industrieel.jpg" alt="Industriële woonstijl">
+        <span class="style-label">Industrieel</span>
+      </button>
+      <button class="style-card" type="button" data-style="Hip">
+        <img src="images/hip.jpg" alt="Hippe, kleurrijke woonstijl met terracotta tinten">
+        <span class="style-label">Hip</span>
+      </button>
+      <button class="style-card" type="button" data-style="Knus">
+        <img src="images/knus.jpg" alt="Knusse woonstijl met open haard en kaarslicht">
+        <span class="style-label">Knus</span>
+      </button>
+    </div>
+
+    <div class="style-cta">
+      <p>Je kunt dit hierna nog verder verfijnen door een paar meubels te swipen.</p>
+      <a href="vragenlijst.html" class="btn btn-white" id="ga-verder">Ga verder →</a>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-brand">
+      <img src="images/fusl-logo.jpg" alt="FUSL logo">
+      <div>
+        <div class="name">FUSL — First Use, Second Life</div>
+        <div class="tagline">Kwaliteit. Duurzaam. Betaalbaar.</div>
+      </div>
+    </div>
+    <div class="footer-note">Duurzaamheid en gemak</div>
+  </div>
+</footer>
+
+<script src="js/profile.js"></script>
+<script>
+  var cards = document.querySelectorAll('.style-card');
+
+  function selectCard(card) {
+    cards.forEach(function (c) {
+      c.classList.remove('selected');
+      var check = c.querySelector('.style-check');
+      if (check) check.remove();
+    });
+    card.classList.add('selected');
+    if (!card.querySelector('.style-check')) {
+      var span = document.createElement('span');
+      span.className = 'style-check';
+      span.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12L10 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      card.appendChild(span);
+    }
+  }
+
+  // Bij binnenkomst: laat de eerder opgeslagen keuze zien (indien aanwezig).
+  var savedProfile = fuslGetProfile();
+  if (savedProfile.roomStyle) {
+    var savedCard = document.querySelector('.style-card[data-style="' + savedProfile.roomStyle + '"]');
+    if (savedCard) selectCard(savedCard);
+  }
+
+  cards.forEach(function (card) {
+    card.addEventListener('click', function () {
+      selectCard(card);
+      fuslSaveProfile({ roomStyle: card.getAttribute('data-style') });
+    });
+  });
+</script>
+
+</body>
+</html>

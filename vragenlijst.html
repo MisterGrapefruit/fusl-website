@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verfijn je voorkeuren — FUSL</title>
+<meta name="description" content="Swipe door meubels en krijg op basis daarvan een smaakprofiel zodat FUSL je aanbod nog beter kan afstemmen.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <img src="images/fusl-logo.jpg" alt="FUSL logo">
+      FUSL — First Use, Second Life
+    </a>
+    <div class="nav-links">
+      <a href="over-ons.html#hoe-het-werkt">Hoe het werkt</a>
+      <a href="aanbod.html">Aanbod</a>
+      <a href="over-ons.html#voor-winkels">Voor winkels</a>
+      <a href="stijl.html" class="btn btn-accent">Ontdek je stijl</a>
+    </div>
+  </div>
+</nav>
+
+<header class="style-header">
+  <div class="container">
+    <div class="style-mascot">
+      <img src="images/capy-face.png" alt="Capy, de FUSL-mascotte">
+    </div>
+    <div>
+      <div class="speech-bubble" id="capy-line">Swipe naar rechts wat je leuk vindt, naar links wat niet — dan leer ik je smaak steeds beter kennen.</div>
+      <h1>Verfijn je voorkeuren</h1>
+    </div>
+  </div>
+</header>
+
+<div class="style-page-bg">
+  <div class="container swipe-page">
+
+    <div class="swipe-layout">
+      <div class="swipe-main">
+        <div class="swipe-progress-track" id="swipe-progress-track">
+          <div class="swipe-progress-bar" id="swipe-progress-bar"></div>
+        </div>
+        <div class="swipe-progress-label" id="swipe-progress-label"></div>
+
+        <div class="swipe-stage" id="swipe-stage"></div>
+
+        <div class="swipe-actions" id="swipe-actions">
+          <button type="button" class="swipe-btn swipe-btn-no" id="btn-dislike" aria-label="Niet mijn stijl">✕</button>
+          <button type="button" class="swipe-btn swipe-btn-yes" id="btn-like" aria-label="Dit vind ik leuk">❤</button>
+        </div>
+        <p class="swipe-hint">Sleep een kaart, of gebruik de knoppen (ook met de pijltjestoetsen).</p>
+      </div>
+
+      <aside class="swipe-live-panel" id="swipe-live-panel">
+        <h3>Jouw stijl vormt zich</h3>
+        <div class="live-sub" id="live-sub">Nog geen kaarten bekeken.</div>
+
+        <div class="live-section">
+          <div class="live-section-title">Kamerstijl — op basis van je "leuk"-swipes</div>
+          <div class="live-bars" id="live-style-bars"></div>
+        </div>
+
+        <div class="live-section">
+          <div class="live-section-title">Leidende kleur per categorie</div>
+          <div class="live-colors" id="live-colors"></div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="swipe-summary" id="swipe-summary" hidden>
+      <h3>Jouw smaakprofiel</h3>
+      <div class="profile-summary-list" id="swipe-summary-list"></div>
+      <div class="swipe-summary-actions">
+        <a href="aanbod.html" class="btn btn-rust">Bekijk jouw aanbod →</a>
+        <button type="button" class="btn btn-white" id="btn-restart">Swipe opnieuw</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-brand">
+      <img src="images/fusl-logo.jpg" alt="FUSL logo">
+      <div>
+        <div class="name">FUSL — First Use, Second Life</div>
+        <div class="tagline">Kwaliteit. Duurzaam. Betaalbaar.</div>
+      </div>
+    </div>
+    <div class="footer-note">Duurzaamheid en gemak</div>
+  </div>
+</footer>
+
+<script src="js/profile.js"></script>
+<script src="js/aanbod-data.js"></script>
+<script>
+  var CATEGORY_LABELS = { bank: 'Bank', eettafel: 'Eettafel', kast: 'Kast', stoel: 'Stoel' };
+  var CATEGORY_ICON = { bank: '🛋️', eettafel: '🪑', kast: '🗄️', stoel: '💺' };
+
+  var colorHex = {};
+  FUSL_COLORS.forEach(function (c) { colorHex[c.name] = c.hex; });
+
+  var deck = shuffle(SAMPLE_PRODUCTS.slice());
+  var idx = 0;
+  var liked = [];
+  var frontProduct = null;
+
+  var stage = document.getElementById('swipe-stage');
+
+  function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr;
+  }
+
+  function buildCard(p) {
+    var card = document.createElement('div');
+    card.className = 'swipe-card';
+
+    var swatch = document.createElement('div');
+    swatch.className = 'swipe-card-swatch';
+    swatch.style.background = colorHex[p.color] || '#ccc';
+
+    var icon = document.createElement('div');
+    icon.className = 'swipe-card-icon';
+    icon.textContent = CATEGORY_ICON[p.category] || '🪵';
+    swatch.appendChild(icon);
+
+    var likeStamp = document.createElement('div');
+    likeStamp.className = 'swipe-stamp swipe-stamp-like';
+    likeStamp.textContent = 'LEUK';
+    swatch.appendChild(likeStamp);
+
+    var nopeStamp = document.createElement('div');
+    nopeStamp.className = 'swipe-stamp swipe-stamp-nope';
+    nopeStamp.textContent = 'NOPE';
+    swatch.appendChild(nopeStamp);
+
+    var body = document.createElement('div');
+    body.className = 'swipe-card-body';
+    body.innerHTML =
+      '<div class="product-name">' + p.name + '</div>' +
+      '<div class="product-store">' + p.store + ' <span class="badge ' + (p.type === 'lokaal' ? 'badge-local' : 'badge-chain') + '">' + (p.type === 'lokaal' ? 'Lokaal' : 'Keten') + '</span></div>' +
+      '<div class="product-style-tag">' + (p.style || '') + ' · ' + p.color + '</div>' +
+      '<div class="product-price">€ ' + (p.salePrice || p.price) + '</div>';
+
+    card.appendChild(swatch);
+    card.appendChild(body);
+    return card;
+  }
+
+  function updateProgress() {
+    var track = document.getElementById('swipe-progress-bar');
+    var label = document.getElementById('swipe-progress-label');
+    var pct = deck.length ? Math.min(100, (idx / deck.length) * 100) : 100;
+    track.style.width = pct + '%';
+    label.textContent = idx >= deck.length ? 'Klaar!' : ('Kaart ' + (idx + 1) + ' van ' + deck.length);
+  }
+
+  function topStyleCounts(likedItems) {
+    var counts = {};
+    likedItems.forEach(function (p) {
+      if (p.style) counts[p.style] = (counts[p.style] || 0) + 1;
+    });
+    return counts;
+  }
+
+  function topColorForCategory(likedItems, cat) {
+    var counts = {};
+    likedItems.filter(function (p) { return p.category === cat; }).forEach(function (p) {
+      if (p.color) counts[p.color] = (counts[p.color] || 0) + 1;
+    });
+    var best = null, bestCount = 0;
+    Object.keys(counts).forEach(function (c) {
+      if (counts[c] > bestCount) { bestCount = counts[c]; best = c; }
+    });
+    return best;
+  }
+
+  function renderLiveProfile() {
+    var sub = document.getElementById('live-sub');
+    var barsEl = document.getElementById('live-style-bars');
+    var colorsEl = document.getElementById('live-colors');
+
+    sub.textContent = idx === 0
+      ? 'Nog geen kaarten bekeken.'
+      : (liked.length ? liked.length + ' van ' + idx + ' bekeken kaarten bewaard.' : 'Nog niks bewaard van de eerste ' + idx + '.');
+
+    var styleCounts = topStyleCounts(liked);
+    var styleEntries = Object.keys(styleCounts).map(function (s) { return { style: s, count: styleCounts[s] }; });
+    styleEntries.sort(function (a, b) { return b.count - a.count; });
+
+    barsEl.innerHTML = '';
+    if (!styleEntries.length) {
+      barsEl.innerHTML = '<div class="live-empty">Swipe een paar kaarten leuk om dit te zien groeien.</div>';
+    } else {
+      var maxCount = styleEntries[0].count;
+      styleEntries.forEach(function (entry) {
+        var row = document.createElement('div');
+        row.className = 'live-bar-row';
+        var pct = Math.max(8, Math.round((entry.count / maxCount) * 100));
+        row.innerHTML =
+          '<div class="live-bar-label">' + entry.style + '</div>' +
+          '<div class="live-bar-track"><div class="live-bar-fill" style="width:' + pct + '%"></div></div>' +
+          '<div class="live-bar-count">' + entry.count + '</div>';
+        barsEl.appendChild(row);
+      });
+    }
+
+    colorsEl.innerHTML = '';
+    Object.keys(CATEGORY_LABELS).forEach(function (cat) {
+      var best = topColorForCategory(liked, cat);
+      var row = document.createElement('div');
+      row.className = 'live-color-row';
+      if (best) {
+        row.innerHTML =
+          '<span class="live-color-dot" style="background:' + (colorHex[best] || '#ccc') + '"></span>' +
+          '<span class="live-color-label"><strong>' + CATEGORY_LABELS[cat] + ':</strong> ' + best + '</span>';
+      } else {
+        row.innerHTML =
+          '<span class="live-color-dot live-color-dot-empty">?</span>' +
+          '<span class="live-color-label live-color-label-empty"><strong>' + CATEGORY_LABELS[cat] + ':</strong> nog onbekend</span>';
+      }
+      colorsEl.appendChild(row);
+    });
+  }
+
+  function renderStage() {
+    stage.innerHTML = '';
+    renderLiveProfile();
+    if (idx >= deck.length) {
+      document.getElementById('swipe-actions').hidden = true;
+      document.querySelector('.swipe-hint').hidden = true;
+      updateProgress();
+      showSummary();
+      return;
+    }
+
+    var visible = deck.slice(idx, idx + 3);
+    visible.forEach(function (p, k) {
+      var layer = visible.length - 1 - k; // 0 = front
+      var card = buildCard(p);
+      card.style.zIndex = String(10 - layer);
+      card.style.transform = 'translateY(' + (layer * 10) + 'px) scale(' + (1 - layer * 0.045) + ')';
+      card.style.opacity = layer === 2 ? '0.7' : '1';
+      stage.appendChild(card);
+    });
+
+    frontProduct = deck[idx];
+    var frontCard = stage.lastChild;
+    attachDrag(frontCard, frontProduct);
+    updateProgress();
+  }
+
+  function attachDrag(cardEl, product) {
+    var dragging = false, startX = 0, startY = 0, deltaX = 0, deltaY = 0;
+
+    cardEl.addEventListener('pointerdown', function (e) {
+      dragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      cardEl.classList.add('dragging');
+      try { cardEl.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+
+    cardEl.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      deltaX = e.clientX - startX;
+      deltaY = e.clientY - startY;
+      cardEl.style.transform = 'translate(' + deltaX + 'px,' + deltaY + 'px) rotate(' + (deltaX / 14) + 'deg)';
+      cardEl.classList.toggle('show-like', deltaX > 36);
+      cardEl.classList.toggle('show-nope', deltaX < -36);
+    });
+
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      cardEl.classList.remove('dragging');
+      var threshold = 90;
+      if (deltaX > threshold) {
+        commitSwipe(true, cardEl);
+      } else if (deltaX < -threshold) {
+        commitSwipe(false, cardEl);
+      } else {
+        cardEl.style.transform = '';
+        cardEl.classList.remove('show-like', 'show-nope');
+      }
+      deltaX = 0; deltaY = 0;
+    }
+
+    cardEl.addEventListener('pointerup', endDrag);
+    cardEl.addEventListener('pointercancel', endDrag);
+  }
+
+  function commitSwipe(isLike, cardEl) {
+    if (idx >= deck.length) return;
+    cardEl = cardEl || stage.lastChild;
+    var product = deck[idx];
+
+    cardEl.style.transition = 'transform 0.32s ease, opacity 0.32s ease';
+    cardEl.style.transform = 'translate(' + (isLike ? 620 : -620) + 'px, -30px) rotate(' + (isLike ? 22 : -22) + 'deg)';
+    cardEl.style.opacity = '0';
+    cardEl.classList.add(isLike ? 'show-like' : 'show-nope');
+
+    if (isLike) liked.push(product);
+    idx++;
+
+    setTimeout(renderStage, 220);
+  }
+
+  document.getElementById('btn-like').addEventListener('click', function () { commitSwipe(true); });
+  document.getElementById('btn-dislike').addEventListener('click', function () { commitSwipe(false); });
+
+  document.addEventListener('keydown', function (e) {
+    if (idx >= deck.length) return;
+    if (e.key === 'ArrowRight') commitSwipe(true);
+    if (e.key === 'ArrowLeft') commitSwipe(false);
+  });
+
+  function computeProfileFromLikes(likedItems) {
+    if (!likedItems.length) return null;
+
+    var styleCounts = {};
+    likedItems.forEach(function (p) {
+      if (p.style) styleCounts[p.style] = (styleCounts[p.style] || 0) + 1;
+    });
+    var roomStyle = null, bestStyleCount = 0;
+    Object.keys(styleCounts).forEach(function (s) {
+      if (styleCounts[s] > bestStyleCount) { bestStyleCount = styleCounts[s]; roomStyle = s; }
+    });
+
+    var colors = {};
+    Object.keys(CATEGORY_LABELS).forEach(function (cat) {
+      var counts = {};
+      likedItems.filter(function (p) { return p.category === cat; }).forEach(function (p) {
+        if (p.color) counts[p.color] = (counts[p.color] || 0) + 1;
+      });
+      var best = null, bestCount = 0;
+      Object.keys(counts).forEach(function (c) {
+        if (counts[c] > bestCount) { bestCount = counts[c]; best = c; }
+      });
+      if (best) colors[cat] = best;
+    });
+
+    return { roomStyle: roomStyle, colors: colors };
+  }
+
+  function showSummary() {
+    var result = computeProfileFromLikes(liked);
+    var summary = document.getElementById('swipe-summary');
+    var list = document.getElementById('swipe-summary-list');
+    list.innerHTML = '';
+
+    if (!result) {
+      document.getElementById('capy-line').textContent = 'Je hebt niks bewaard — swipe gerust opnieuw, of ga direct naar het aanbod.';
+      var row = document.createElement('div');
+      row.textContent = 'Geen enkele kaart bewaard, dus er is geen smaakprofiel om op te slaan.';
+      list.appendChild(row);
+      summary.hidden = false;
+      return;
+    }
+
+    var partial = { colors: result.colors };
+    if (result.roomStyle) partial.roomStyle = result.roomStyle;
+    fuslSaveProfile(partial);
+
+    document.getElementById('capy-line').textContent = 'Mooi! Op basis van ' + liked.length + ' bewaarde kaart' + (liked.length === 1 ? '' : 'en') + ' weet ik nu beter wat bij je past.';
+
+    var styleRow = document.createElement('div');
+    styleRow.innerHTML = '<span class="label">Kamerstijl:</span> ' + (result.roomStyle || 'Geen duidelijke voorkeur');
+    list.appendChild(styleRow);
+
+    Object.keys(CATEGORY_LABELS).forEach(function (key) {
+      var row2 = document.createElement('div');
+      var value = result.colors[key] || 'Geen duidelijke voorkeur';
+      row2.innerHTML = '<span class="label">' + CATEGORY_LABELS[key] + ':</span> ' + value;
+      list.appendChild(row2);
+    });
+
+    summary.hidden = false;
+  }
+
+  document.getElementById('btn-restart').addEventListener('click', function () {
+    deck = shuffle(SAMPLE_PRODUCTS.slice());
+    idx = 0;
+    liked = [];
+    document.getElementById('swipe-summary').hidden = true;
+    document.getElementById('swipe-actions').hidden = false;
+    document.querySelector('.swipe-hint').hidden = false;
+    document.getElementById('capy-line').textContent = 'Swipe naar rechts wat je leuk vindt, naar links wat niet — dan leer ik je smaak steeds beter kennen.';
+    renderStage();
+  });
+
+  renderStage();
+</script>
+
+</body>
+</html>

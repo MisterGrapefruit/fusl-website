@@ -27,15 +27,15 @@
 <header class="hero">
   <div class="container">
     <div class="hero-copy">
-      <h1>Nieuw. Onverkocht.<br>Verdient een thuis.</h1>
-      <p>FUSL brengt overtollige voorraad van winkels samen op één plek — met persoonlijke begeleiding en korte lijnen tussen aanbieder en afnemer.</p>
+      <h1><span data-cms="heroTitleLine1">Nieuw. Onverkocht.</span><br><span data-cms="heroTitleLine2">Verdient een thuis.</span></h1>
+      <p data-cms="heroText">FUSL brengt overtollige voorraad van winkels samen op één plek — met persoonlijke begeleiding en korte lijnen tussen aanbieder en afnemer.</p>
       <div class="hero-actions">
         <a href="stijl.html" class="btn btn-rust">Ontdek je stijl</a>
         <a href="over-ons.html#voor-winkels" class="btn btn-white">Voor winkels</a>
       </div>
     </div>
     <div class="hero-mascot">
-      <div class="speech-bubble">Hoi, ik ben Capy! Ik help je op weg naar de juiste meubels.</div>
+      <div class="speech-bubble" data-cms="mascotSpeech">Hoi, ik ben Capy! Ik help je op weg naar de juiste meubels.</div>
       <img src="images/capy-full.png" alt="Capy, de FUSL-mascotte" class="mascot-img">
     </div>
   </div>
@@ -97,6 +97,9 @@
     <div class="footer-note">Duurzaamheid en gemak</div>
   </div>
 </footer>
+
+<script src="js/cms-content.js"></script>
+<script>fuslApplyCmsContent('data/home-content.json');</script>
 
 </body>
 </html>

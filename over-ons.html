@@ -33,8 +33,8 @@
 <section class="about-section">
   <div class="container">
     <h2>Ons verhaal</h2>
-    <p>FUSL biedt een platform én persoonlijke begeleiding waarmee winkels hun overtollige voorraad effectief kunnen afzetten via nieuwe, passende markten. Producten worden overzichtelijk per categorie aangeboden, zodat afnemers snel en gericht relevante aanbieders vinden. In combinatie met direct één-op-één contact zorgen we voor korte lijnen en duurzame samenwerkingen tussen aanbieders en afnemers.</p>
-    <p>We willen een concrete bijdrage leveren aan duurzaamheid binnen de meubelsector. Waar de focus vaak ligt op second life, geloven wij dat er ook veel winst te behalen is in het verlengen van de first life van producten. Nieuwe, ongebruikte producten verdienen het om daadwerkelijk gebruikt te worden — niet om ongebruikt in magazijnen te blijven liggen.</p>
+    <p data-cms="verhaalIntro1">FUSL biedt een platform én persoonlijke begeleiding waarmee winkels hun overtollige voorraad effectief kunnen afzetten via nieuwe, passende markten. Producten worden overzichtelijk per categorie aangeboden, zodat afnemers snel en gericht relevante aanbieders vinden. In combinatie met direct één-op-één contact zorgen we voor korte lijnen en duurzame samenwerkingen tussen aanbieders en afnemers.</p>
+    <p data-cms="verhaalIntro2">We willen een concrete bijdrage leveren aan duurzaamheid binnen de meubelsector. Waar de focus vaak ligt op second life, geloven wij dat er ook veel winst te behalen is in het verlengen van de first life van producten. Nieuwe, ongebruikte producten verdienen het om daadwerkelijk gebruikt te worden — niet om ongebruikt in magazijnen te blijven liggen.</p>
   </div>
 </section>
 
@@ -51,16 +51,16 @@
     <h2>Onze doelen</h2>
     <div class="goals-grid">
       <div class="goal-card">
-        <h3>Betaalbaar</h3>
-        <p>Betaalbare meubels toegankelijk maken voor mensen.</p>
+        <h3 data-cms="doelBetaalbaarTitel">Betaalbaar</h3>
+        <p data-cms="doelBetaalbaarTekst">Betaalbare meubels toegankelijk maken voor mensen.</p>
       </div>
       <div class="goal-card">
-        <h3>Gemak</h3>
-        <p>Het vinden van de juiste meubels zo makkelijk mogelijk maken.</p>
+        <h3 data-cms="doelGemakTitel">Gemak</h3>
+        <p data-cms="doelGemakTekst">Het vinden van de juiste meubels zo makkelijk mogelijk maken.</p>
       </div>
       <div class="goal-card">
-        <h3>Duurzaamheid</h3>
-        <p>We onderzoeken doorlopend hoe we dit zo duurzaam mogelijk kunnen inrichten.</p>
+        <h3 data-cms="doelDuurzaamheidTitel">Duurzaamheid</h3>
+        <p data-cms="doelDuurzaamheidTekst">We onderzoeken doorlopend hoe we dit zo duurzaam mogelijk kunnen inrichten.</p>
         <div class="stat-counter" id="stat-aanbod">–</div>
         <div class="stat-counter-sub">meubels op dit moment vindbaar via FUSL</div>
         <div class="placeholder-note">Concrete CO₂-doelen volgen nog — het cijfer hierboven is een live telling van het huidige aanbod.</div>
@@ -130,20 +130,20 @@
 
 <section class="about-section">
   <div class="container">
-    <h2>Wat mensen over FUSL zeggen</h2>
-    <p><em>Deze pagina is net live — hieronder staan voorbeeldteksten om de vormgeving te laten zien. Zodra er echte reacties van klanten en winkels binnenkomen, vervangen we deze door hun eigen woorden.</em></p>
+    <h2 data-cms="testimonialsTitel">Wat mensen over FUSL zeggen</h2>
+    <p><em data-cms="testimonialsIntro">Deze pagina is net live — hieronder staan voorbeeldteksten om de vormgeving te laten zien. Zodra er echte reacties van klanten en winkels binnenkomen, vervangen we deze door hun eigen woorden.</em></p>
     <div class="testimonial-grid">
       <div class="testimonial-card">
-        <div class="testimonial-quote">Voorbeeldtekst — hier komt straks een echte reactie van een klant over hoe FUSL hen aan de juiste meubels hielp.</div>
-        <div class="testimonial-author">— Voorbeeld, klant (nog te vervangen)</div>
+        <div class="testimonial-quote" data-cms="testimonial1Quote">Voorbeeldtekst — hier komt straks een echte reactie van een klant over hoe FUSL hen aan de juiste meubels hielp.</div>
+        <div class="testimonial-author" data-cms="testimonial1Auteur">— Voorbeeld, klant (nog te vervangen)</div>
       </div>
       <div class="testimonial-card">
-        <div class="testimonial-quote">Voorbeeldtekst — hier komt straks een echte reactie van een winkel over de samenwerking met FUSL.</div>
-        <div class="testimonial-author">— Voorbeeld, winkelpartner (nog te vervangen)</div>
+        <div class="testimonial-quote" data-cms="testimonial2Quote">Voorbeeldtekst — hier komt straks een echte reactie van een winkel over de samenwerking met FUSL.</div>
+        <div class="testimonial-author" data-cms="testimonial2Auteur">— Voorbeeld, winkelpartner (nog te vervangen)</div>
       </div>
       <div class="testimonial-card">
-        <div class="testimonial-quote">Voorbeeldtekst — hier komt straks een echte reactie over een gevonden kortingsactie.</div>
-        <div class="testimonial-author">— Voorbeeld, klant (nog te vervangen)</div>
+        <div class="testimonial-quote" data-cms="testimonial3Quote">Voorbeeldtekst — hier komt straks een echte reactie over een gevonden kortingsactie.</div>
+        <div class="testimonial-author" data-cms="testimonial3Auteur">— Voorbeeld, klant (nog te vervangen)</div>
       </div>
     </div>
   </div>
@@ -163,6 +163,7 @@
 </footer>
 
 <script src="js/aanbod-data.js"></script>
+<script src="js/cms-content.js"></script>
 <script>
   function fuslUpdateAanbodStat(count) {
     var el = document.getElementById('stat-aanbod');
@@ -172,6 +173,7 @@
   fuslLoadLiveListings(function (liveListings) {
     fuslUpdateAanbodStat(liveListings.length + SAMPLE_PRODUCTS.length);
   });
+  fuslApplyCmsContent('data/over-ons-content.json');
 </script>
 
 </body>

@@ -40,6 +40,18 @@
   <div class="container swipe-page">
 
     <div class="swipe-layout">
+      <aside class="swipe-filter-panel" id="swipe-filter-panel">
+        <h3>Filter op meubelsoort</h3>
+        <p class="filter-sub">Vink aan waar je naar zoekt, zodat je geen irrelevante kaartjes krijgt.</p>
+        <div class="filter-check-list" id="filter-categories">
+          <label class="filter-check"><input type="checkbox" value="bank" checked> <span>🛋️ Bank</span></label>
+          <label class="filter-check"><input type="checkbox" value="stoel" checked> <span>💺 Stoelen</span></label>
+          <label class="filter-check"><input type="checkbox" value="eettafel" checked> <span>🪑 Tafel</span></label>
+          <label class="filter-check"><input type="checkbox" value="kast" checked> <span>🗄️ Kast</span></label>
+          <label class="filter-check"><input type="checkbox" value="bed" checked> <span>🛏️ Bed</span></label>
+        </div>
+      </aside>
+
       <div class="swipe-main">
         <div class="swipe-progress-track" id="swipe-progress-track">
           <div class="swipe-progress-bar" id="swipe-progress-bar"></div>
@@ -99,15 +111,21 @@
 <script src="js/profile.js"></script>
 <script src="js/aanbod-data.js"></script>
 <script>
-  var CATEGORY_LABELS = { bank: 'Bank', eettafel: 'Eettafel', kast: 'Kast', stoel: 'Stoel' };
-  var CATEGORY_ICON = { bank: '🛋️', eettafel: '🪑', kast: '🗄️', stoel: '💺' };
+  var CATEGORY_LABELS = { bank: 'Bank', eettafel: 'Eettafel', kast: 'Kast', stoel: 'Stoel', bed: 'Bed' };
+  var CATEGORY_ICON = { bank: '🛋️', eettafel: '🪑', kast: '🗄️', stoel: '💺', bed: '🛏️' };
 
   var colorHex = {};
   FUSL_COLORS.forEach(function (c) { colorHex[c.name] = c.hex; });
 
-  var deck = shuffle(SAMPLE_PRODUCTS.slice());
-  var idx = 0;
+  // judgedIds houdt bij welke producten al geswiped zijn (leuk of niet) — die
+  // komen nooit meer terug, ook niet als het filter daarna weer wijzigt.
+  // selectedCategories bepaalt welke meubelsoorten momenteel getoond worden;
+  // alles staat bij binnenkomst aan.
+  var judgedIds = {};
   var liked = [];
+  var deck = [];
+  var selectedCategories = {};
+  Object.keys(CATEGORY_LABELS).forEach(function (c) { selectedCategories[c] = true; });
   var frontProduct = null;
 
   var stage = document.getElementById('swipe-stage');
@@ -119,6 +137,39 @@
     }
     return arr;
   }
+
+  function categoryAllowed(cat) {
+    return !!selectedCategories[cat];
+  }
+
+  function availableProducts() {
+    return SAMPLE_PRODUCTS.filter(function (p) {
+      return !judgedIds[p.id] && categoryAllowed(p.category);
+    });
+  }
+
+  // Totaal/gedaan binnen het huidige filter — los van judgedIds buiten het
+  // filter, zodat de voortgangsbalk klopt met wat je nu daadwerkelijk ziet.
+  function filterTotal() {
+    return SAMPLE_PRODUCTS.filter(function (p) { return categoryAllowed(p.category); }).length;
+  }
+  function filterDone() {
+    return SAMPLE_PRODUCTS.filter(function (p) { return categoryAllowed(p.category) && judgedIds[p.id]; }).length;
+  }
+
+  function rebuildDeck() {
+    deck = shuffle(availableProducts());
+  }
+
+  function applyCategoryFilter() {
+    var checkboxes = document.querySelectorAll('#filter-categories input[type="checkbox"]');
+    selectedCategories = {};
+    checkboxes.forEach(function (cb) { selectedCategories[cb.value] = cb.checked; });
+    rebuildDeck();
+    renderStage();
+  }
+
+  document.getElementById('filter-categories').addEventListener('change', applyCategoryFilter);
 
   function buildCard(p) {
     var card = document.createElement('div');
@@ -159,9 +210,11 @@
   function updateProgress() {
     var track = document.getElementById('swipe-progress-bar');
     var label = document.getElementById('swipe-progress-label');
-    var pct = deck.length ? Math.min(100, (idx / deck.length) * 100) : 100;
+    var total = filterTotal();
+    var done = filterDone();
+    var pct = total ? Math.min(100, (done / total) * 100) : 100;
     track.style.width = pct + '%';
-    label.textContent = idx >= deck.length ? 'Klaar!' : ('Kaart ' + (idx + 1) + ' van ' + deck.length);
+    label.textContent = deck.length === 0 ? 'Klaar!' : ('Kaart ' + (done + 1) + ' van ' + total);
   }
 
   function topStyleCounts(likedItems) {
@@ -189,9 +242,10 @@
     var barsEl = document.getElementById('live-style-bars');
     var colorsEl = document.getElementById('live-colors');
 
-    sub.textContent = idx === 0
+    var seenCount = Object.keys(judgedIds).length;
+    sub.textContent = seenCount === 0
       ? 'Nog geen kaarten bekeken.'
-      : (liked.length ? liked.length + ' van ' + idx + ' bekeken kaarten bewaard.' : 'Nog niks bewaard van de eerste ' + idx + '.');
+      : (liked.length ? liked.length + ' van ' + seenCount + ' bekeken kaarten bewaard.' : 'Nog niks bewaard van de eerste ' + seenCount + '.');
 
     var styleCounts = topStyleCounts(liked);
     var styleEntries = Object.keys(styleCounts).map(function (s) { return { style: s, count: styleCounts[s] }; });
@@ -235,15 +289,22 @@
   function renderStage() {
     stage.innerHTML = '';
     renderLiveProfile();
-    if (idx >= deck.length) {
+    if (deck.length === 0) {
       document.getElementById('swipe-actions').hidden = true;
       document.querySelector('.swipe-hint').hidden = true;
       updateProgress();
-      showSummary();
+      if (filterTotal() === 0) {
+        showEmptyFilterMessage();
+      } else {
+        showSummary();
+      }
       return;
     }
+    document.getElementById('swipe-summary').hidden = true;
+    document.getElementById('swipe-actions').hidden = false;
+    document.querySelector('.swipe-hint').hidden = false;
 
-    var visible = deck.slice(idx, idx + 3);
+    var visible = deck.slice(0, 3);
     visible.forEach(function (p, k) {
       var layer = visible.length - 1 - k; // 0 = front
       var card = buildCard(p);
@@ -253,10 +314,15 @@
       stage.appendChild(card);
     });
 
-    frontProduct = deck[idx];
+    frontProduct = deck[0];
     var frontCard = stage.lastChild;
     attachDrag(frontCard, frontProduct);
     updateProgress();
+  }
+
+  function showEmptyFilterMessage() {
+    document.getElementById('swipe-summary').hidden = true;
+    document.getElementById('capy-line').textContent = 'Geen kaartjes gevonden binnen dit filter — vink een andere meubelsoort aan.';
   }
 
   function attachDrag(cardEl, product) {
@@ -300,17 +366,18 @@
   }
 
   function commitSwipe(isLike, cardEl) {
-    if (idx >= deck.length) return;
+    if (!deck.length) return;
     cardEl = cardEl || stage.lastChild;
-    var product = deck[idx];
+    var product = deck[0];
 
     cardEl.style.transition = 'transform 0.32s ease, opacity 0.32s ease';
     cardEl.style.transform = 'translate(' + (isLike ? 620 : -620) + 'px, -30px) rotate(' + (isLike ? 22 : -22) + 'deg)';
     cardEl.style.opacity = '0';
     cardEl.classList.add(isLike ? 'show-like' : 'show-nope');
 
+    judgedIds[product.id] = true;
     if (isLike) liked.push(product);
-    idx++;
+    deck.shift();
 
     setTimeout(renderStage, 220);
   }
@@ -319,7 +386,7 @@
   document.getElementById('btn-dislike').addEventListener('click', function () { commitSwipe(false); });
 
   document.addEventListener('keydown', function (e) {
-    if (idx >= deck.length) return;
+    if (!deck.length) return;
     if (e.key === 'ArrowRight') commitSwipe(true);
     if (e.key === 'ArrowLeft') commitSwipe(false);
   });
@@ -368,7 +435,16 @@
     }
 
     var partial = { colors: result.colors };
-    if (result.roomStyle) partial.roomStyle = result.roomStyle;
+    if (result.roomStyle) {
+      // Voeg de op basis van de swipes bepaalde topstijl toe aan de eventueel
+      // al op de stijlpagina geselecteerde stijlen, in plaats van die te
+      // overschrijven.
+      var existingStyles = fuslGetProfile().roomStyles || [];
+      if (existingStyles.indexOf(result.roomStyle) === -1) {
+        existingStyles = existingStyles.concat([result.roomStyle]);
+      }
+      partial.roomStyles = existingStyles;
+    }
     fuslSaveProfile(partial);
 
     document.getElementById('capy-line').textContent = 'Mooi! Op basis van ' + liked.length + ' bewaarde kaart' + (liked.length === 1 ? '' : 'en') + ' weet ik nu beter wat bij je past.';
@@ -388,9 +464,9 @@
   }
 
   document.getElementById('btn-restart').addEventListener('click', function () {
-    deck = shuffle(SAMPLE_PRODUCTS.slice());
-    idx = 0;
+    judgedIds = {};
     liked = [];
+    rebuildDeck();
     document.getElementById('swipe-summary').hidden = true;
     document.getElementById('swipe-actions').hidden = false;
     document.querySelector('.swipe-hint').hidden = false;
@@ -398,6 +474,7 @@
     renderStage();
   });
 
+  rebuildDeck();
   renderStage();
 </script>
 

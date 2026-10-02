@@ -30,7 +30,9 @@ var SAMPLE_PRODUCTS = [
   { id: 15, name: 'Fluwelen chesterfield bank', category: 'bank', color: 'Donkerblauw', style: 'Klassiek', store: 'Meubelhuis Noord', type: 'lokaal', price: 1249, salePrice: null, status: 'Showroommodel' },
   { id: 16, name: 'Rieten loungestoel', category: 'stoel', color: 'Wit', style: 'Kuststijl', store: 'De Eetkamerzaak', type: 'lokaal', price: 179, salePrice: null, status: 'In de verkoop' },
   { id: 17, name: 'Art Deco dressoir', category: 'kast', color: 'Zwart', style: 'Art Deco', store: 'Interimo', type: 'keten', price: 590, salePrice: null, status: 'Showroommodel' },
-  { id: 18, name: 'Patchwork bank', category: 'bank', color: 'Terracotta', style: 'Maximalistisch', store: 'StudioKleur', type: 'lokaal', price: 975, salePrice: null, status: 'In de verkoop' }
+  { id: 18, name: 'Patchwork bank', category: 'bank', color: 'Terracotta', style: 'Maximalistisch', store: 'StudioKleur', type: 'lokaal', price: 975, salePrice: null, status: 'In de verkoop' },
+  { id: 19, name: 'Boxspring Malmö', category: 'bed', color: 'Grijs', style: 'Scandinavisch', store: 'Meubelhuis Noord', type: 'lokaal', price: 799, salePrice: null, status: 'Showroommodel' },
+  { id: 20, name: 'Houten bedframe landelijk', category: 'bed', color: 'Naturel hout', style: 'Landelijk', store: 'Woonstijl Verhoeven', type: 'lokaal', price: 540, salePrice: null, status: 'In de verkoop' }
 ];
 
 // Zet een genormaliseerde aanbod.json-listing om naar hetzelfde vorm als

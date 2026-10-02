@@ -44,6 +44,7 @@
       <button class="pill" data-category="eettafel" type="button">Eettafel</button>
       <button class="pill" data-category="kast" type="button">Kast</button>
       <button class="pill" data-category="stoel" type="button">Stoel</button>
+      <button class="pill" data-category="bed" type="button">Bed</button>
     </div>
     <div class="filter-group" id="type-filters">
       <button class="pill active" data-type="alles" type="button">Alles</button>
@@ -88,19 +89,20 @@
   var PRODUCTS = SAMPLE_PRODUCTS; // wordt aangevuld/vervangen zodra live winkelaanbod geladen is
 
   function setupProfileBanner() {
+    var hasStyles = profile.roomStyles && profile.roomStyles.length > 0;
     var hasColors = profile.colors && Object.keys(profile.colors).length > 0;
-    if (!profile.roomStyle && !hasColors) return;
+    if (!hasStyles && !hasColors) return;
     var banner = document.getElementById('profile-banner');
     var text = document.getElementById('profile-banner-text');
     var parts = [];
-    if (profile.roomStyle) parts.push('stijl ' + profile.roomStyle);
+    if (hasStyles) parts.push((profile.roomStyles.length > 1 ? 'stijlen ' : 'stijl ') + profile.roomStyles.join(', '));
     if (hasColors) parts.push(Object.keys(profile.colors).length + ' kleurvoorkeur(en)');
     text.textContent = 'Gefilterd op basis van jouw profiel: ' + parts.join(', ') + '.';
     banner.style.display = 'flex';
   }
 
   function matchesProfile(product) {
-    if (profile.roomStyle && product.style === profile.roomStyle) return true;
+    if (profile.roomStyles && profile.roomStyles.indexOf(product.style) !== -1) return true;
     if (profile.colors) {
       var wanted = profile.colors[product.category];
       if (wanted && wanted === product.color) return true;
@@ -124,7 +126,7 @@
       return true;
     });
 
-    if (profile.roomStyle || (profile.colors && Object.keys(profile.colors).length)) {
+    if ((profile.roomStyles && profile.roomStyles.length) || (profile.colors && Object.keys(profile.colors).length)) {
       filtered.sort(function (a, b) {
         return (matchesProfile(b) ? 1 : 0) - (matchesProfile(a) ? 1 : 0);
       });

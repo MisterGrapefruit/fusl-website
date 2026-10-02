@@ -19,12 +19,18 @@ var FUSL_COLORS = [
 function fuslGetProfile() {
   try {
     var raw = window.localStorage.getItem(FUSL_PROFILE_KEY);
-    if (!raw) return { roomStyle: null, colors: {} };
+    if (!raw) return { roomStyles: [], colors: {} };
     var parsed = JSON.parse(raw);
     if (!parsed.colors) parsed.colors = {};
+    // roomStyle (enkelvoud) is de oude opslagvorm van vóór het meerdere-stijlen-
+    // selecteren. Migreer 'm naar roomStyles (array) zodat eerder opgeslagen
+    // profielen blijven werken.
+    if (!parsed.roomStyles) {
+      parsed.roomStyles = parsed.roomStyle ? [parsed.roomStyle] : [];
+    }
     return parsed;
   } catch (e) {
-    return { roomStyle: null, colors: {} };
+    return { roomStyles: [], colors: {} };
   }
 }
 

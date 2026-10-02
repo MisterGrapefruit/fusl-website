@@ -43,11 +43,8 @@
         <img src="images/landelijk.jpg" alt="Landelijke woonstijl met natuursteen open haard en leren fauteuils">
         <span class="style-label">Landelijk</span>
       </button>
-      <button class="style-card selected" type="button" data-style="Scandinavisch">
+      <button class="style-card" type="button" data-style="Scandinavisch">
         <img src="images/scandinavisch.jpg" alt="Scandinavische woonstijl met lichte tinten en planten">
-        <span class="style-check">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12L10 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
         <span class="style-label">Scandinavisch</span>
       </button>
       <button class="style-card" type="button" data-style="Industrieel">
@@ -90,11 +87,14 @@
         <span class="style-swatch-note">Foto volgt</span>
         <span class="style-label">Maximalistisch</span>
       </button>
-    </div>
 
-    <div class="style-cta">
-      <p>Je kunt dit hierna nog verder verfijnen door een paar meubels te swipen.</p>
-      <a href="vragenlijst.html" class="btn btn-white" id="ga-verder">Ga verder →</a>
+      <a href="vragenlijst.html" class="style-card style-card--cta" id="ga-verder">
+        <span class="style-cta-arrow">→</span>
+        <span class="style-cta-copy">
+          <span class="style-cta-title">Ga verder</span>
+          <span class="style-cta-sub">Verfijn je voorkeuren door een paar meubels te swipen</span>
+        </span>
+      </a>
     </div>
   </div>
 </div>
@@ -114,34 +114,53 @@
 
 <script src="js/profile.js"></script>
 <script>
-  var cards = document.querySelectorAll('.style-card');
+  // Alleen de tegels met een data-style zijn echte stijlkeuzes — de
+  // "Ga verder"-tegel is een gewone link en doet niet mee aan het selecteren.
+  var cards = document.querySelectorAll('.style-card[data-style]');
 
-  function selectCard(card) {
-    cards.forEach(function (c) {
-      c.classList.remove('selected');
-      var check = c.querySelector('.style-check');
-      if (check) check.remove();
-    });
-    card.classList.add('selected');
-    if (!card.querySelector('.style-check')) {
-      var span = document.createElement('span');
-      span.className = 'style-check';
-      span.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12L10 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-      card.appendChild(span);
+  function setCardSelected(card, selected) {
+    card.classList.toggle('selected', selected);
+    var check = card.querySelector('.style-check');
+    if (selected) {
+      if (!check) {
+        var span = document.createElement('span');
+        span.className = 'style-check';
+        span.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12L10 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        card.appendChild(span);
+      }
+    } else if (check) {
+      check.remove();
     }
   }
 
-  // Bij binnenkomst: laat de eerder opgeslagen keuze zien (indien aanwezig).
-  var savedProfile = fuslGetProfile();
-  if (savedProfile.roomStyle) {
-    var savedCard = document.querySelector('.style-card[data-style="' + savedProfile.roomStyle + '"]');
-    if (savedCard) selectCard(savedCard);
+  function getSelectedStyles() {
+    return Array.prototype.filter.call(cards, function (c) {
+      return c.classList.contains('selected');
+    }).map(function (c) {
+      return c.getAttribute('data-style');
+    });
   }
 
+  // Bij binnenkomst: laat de eerder opgeslagen keuze(s) zien (indien aanwezig).
+  // roomStyles is de huidige (array) vorm; roomStyle is de oude, enkelvoudige
+  // vorm die we nog even terugvallen op zodat eerder opgeslagen profielen
+  // blijven werken.
+  var savedProfile = fuslGetProfile();
+  var savedStyles = savedProfile.roomStyles && savedProfile.roomStyles.length
+    ? savedProfile.roomStyles
+    : (savedProfile.roomStyle ? [savedProfile.roomStyle] : []);
+  cards.forEach(function (card) {
+    if (savedStyles.indexOf(card.getAttribute('data-style')) !== -1) {
+      setCardSelected(card, true);
+    }
+  });
+
+  // Je kunt nu meerdere stijlen tegelijk aanvinken: elke tegel schakelt
+  // onafhankelijk aan/uit, in plaats van dat er maar één geselecteerd kan zijn.
   cards.forEach(function (card) {
     card.addEventListener('click', function () {
-      selectCard(card);
-      fuslSaveProfile({ roomStyle: card.getAttribute('data-style') });
+      setCardSelected(card, !card.classList.contains('selected'));
+      fuslSaveProfile({ roomStyles: getSelectedStyles() });
     });
   });
 </script>

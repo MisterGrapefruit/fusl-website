@@ -26,8 +26,16 @@
 
 <header class="aanbod-header">
   <div class="container">
-    <h1>Het aanbod</h1>
-    <p>Meubels van winkels in de FUSL-community — showroommodellen, producten die uit de verkoop gaan, en kortingsacties van aangesloten winkels. <em>Dit combineert voorbeelddata met live winkelaanbod zodra dat is aangesloten.</em></p>
+    <h1 class="visually-hidden">Aanbod — zoek je meubel</h1>
+    <div class="aanbod-search-header">
+      <div class="style-mascot">
+        <img src="images/capy-face.png" alt="Capy, de FUSL-mascotte">
+      </div>
+      <div class="aanbod-search-col">
+        <div class="speech-bubble aanbod-speech-bubble">Vertel me wat voor meubel je zoekt, dan zoek ik de beste aanbiedingen voor je!</div>
+        <input type="text" class="search-input aanbod-search-input" id="search-input" placeholder="Bijv. bank, eettafel, Scandinavisch…" autocomplete="off">
+      </div>
+    </div>
     <div class="profile-banner" id="profile-banner" style="display: none;">
       <span id="profile-banner-text"></span>
       <a href="vragenlijst.html">Wijzig je voorkeuren</a>
@@ -35,9 +43,8 @@
   </div>
 </header>
 
-<div class="filter-bar">
+<div class="filter-bar" id="filter-bar" hidden>
   <div class="container">
-    <input type="text" class="search-input" id="search-input" placeholder="Zoek op meubel of winkel…">
     <div class="filter-group" id="category-filters">
       <button class="pill active" data-category="alles" type="button">Alles</button>
       <button class="pill" data-category="bank" type="button">Bank</button>
@@ -88,11 +95,20 @@
   var profile = fuslGetProfile();
   var PRODUCTS = SAMPLE_PRODUCTS; // wordt aangevuld/vervangen zodra live winkelaanbod geladen is
 
-  function setupProfileBanner() {
+  // Pas als er iets getypt is, tonen we filters, profielbanner en resultaten —
+  // daarvoor houden we de pagina bewust rustig (alleen Capy + zoekbalk).
+  function hasSearch() {
+    return state.search.trim().length > 0;
+  }
+
+  function updateProfileBanner() {
+    var banner = document.getElementById('profile-banner');
     var hasStyles = profile.roomStyles && profile.roomStyles.length > 0;
     var hasColors = profile.colors && Object.keys(profile.colors).length > 0;
-    if (!hasStyles && !hasColors) return;
-    var banner = document.getElementById('profile-banner');
+    if (!hasSearch() || (!hasStyles && !hasColors)) {
+      banner.style.display = 'none';
+      return;
+    }
     var text = document.getElementById('profile-banner-text');
     var parts = [];
     if (hasStyles) parts.push((profile.roomStyles.length > 1 ? 'stijlen ' : 'stijl ') + profile.roomStyles.join(', '));
@@ -112,6 +128,16 @@
 
   function render() {
     var grid = document.getElementById('product-grid');
+    var filterBar = document.getElementById('filter-bar');
+
+    updateProfileBanner();
+
+    if (!hasSearch()) {
+      filterBar.hidden = true;
+      grid.innerHTML = '';
+      return;
+    }
+    filterBar.hidden = false;
     grid.innerHTML = '';
 
     var filtered = PRODUCTS.filter(function (p) {
@@ -121,7 +147,8 @@
       if (state.favoritesOnly && !fuslIsFavorite(p.id)) return false;
       if (state.search) {
         var q = state.search.toLowerCase();
-        if (p.name.toLowerCase().indexOf(q) === -1 && p.store.toLowerCase().indexOf(q) === -1) return false;
+        var haystack = [p.name, p.store, p.category, p.style || '', p.color || ''].join(' ').toLowerCase();
+        if (haystack.indexOf(q) === -1) return false;
       }
       return true;
     });
@@ -256,7 +283,6 @@
     if (state.favoritesOnly) render();
   });
 
-  setupProfileBanner();
   render();
 
   // Live winkelaanbod (via tools/sync-feed.js -> data/aanbod.json) erbij laden

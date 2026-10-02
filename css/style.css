@@ -543,6 +543,41 @@ img { max-width: 100%; display: block; }
 .aanbod-header h1 { color: white; font-size: 30px; }
 .aanbod-header p { color: rgba(255,255,255,0.85); margin: 10px 0 0; font-size: 14px; max-width: 560px; }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.aanbod-search-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.aanbod-search-col { flex: 1 1 260px; min-width: 240px; }
+
+.aanbod-speech-bubble { max-width: 320px; }
+
+.aanbod-search-input {
+  width: 100%;
+  max-width: 440px;
+  padding: 14px 22px;
+  border-radius: 100px;
+  border: none;
+  font-family: 'Manrope', sans-serif;
+  font-size: 15px;
+  color: var(--ink);
+  background: white;
+  box-shadow: 0 10px 24px rgba(58,44,32,0.14);
+}
+
+.aanbod-search-input:focus { outline: 2px solid var(--brand-accent); }
+
 .profile-banner {
   margin-top: 18px;
   background: rgba(255,255,255,0.12);

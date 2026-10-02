@@ -534,15 +534,8 @@ img { max-width: 100%; display: block; }
   .testimonial-grid { grid-template-columns: 1fr; }
 }
 
-/* Aanbod (search/listing page) */
-.aanbod-header {
-  background: var(--brand-dark);
-  padding: 44px 0 32px;
-}
-
-.aanbod-header h1 { color: white; font-size: 30px; }
-.aanbod-header p { color: rgba(255,255,255,0.85); margin: 10px 0 0; font-size: 14px; max-width: 560px; }
-
+/* Aanbod (search/listing page) — één rustig "hero"-beeld met de zoekbalk
+   centraal en Capy ernaast, in dezelfde kleurtaal als de homepage-hero. */
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -552,36 +545,89 @@ img { max-width: 100%; display: block; }
   white-space: nowrap;
 }
 
-.aanbod-search-header {
+.aanbod-hero {
+  background: var(--brand-light);
+  position: relative;
+  overflow: hidden;
+  min-height: 72vh;
   display: flex;
-  align-items: flex-start;
-  gap: 20px;
+  align-items: center;
+  padding: 56px 0;
+}
+
+/* Zachte, lichte reliëfvormen in dezelfde kleuren als de rest van de site —
+   puur decoratief, zodat het vlak niet te vlak aanvoelt. */
+.aanbod-hero::before {
+  content: "";
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: var(--brand-light-soft);
+  opacity: 0.55;
+  top: -220px;
+  right: -160px;
+}
+
+.aanbod-hero::after {
+  content: "";
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: var(--cream);
+  opacity: 0.35;
+  bottom: -160px;
+  left: -110px;
+}
+
+.aanbod-hero .container { position: relative; }
+
+.aanbod-hero-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
   flex-wrap: wrap;
 }
 
-.aanbod-search-col { flex: 1 1 260px; min-width: 240px; }
+.aanbod-search-block {
+  flex: 0 1 540px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-.aanbod-speech-bubble { max-width: 320px; }
+.aanbod-speech-bubble { max-width: 380px; }
 
 .aanbod-search-input {
   width: 100%;
-  max-width: 440px;
-  padding: 14px 22px;
+  max-width: 540px;
+  padding: 19px 30px;
   border-radius: 100px;
   border: none;
   font-family: 'Manrope', sans-serif;
-  font-size: 15px;
+  font-size: 17px;
   color: var(--ink);
   background: white;
-  box-shadow: 0 10px 24px rgba(58,44,32,0.14);
+  box-shadow: 0 16px 36px rgba(58,44,32,0.18);
 }
 
 .aanbod-search-input:focus { outline: 2px solid var(--brand-accent); }
 
+.aanbod-hero-mascot {
+  flex: 0 0 200px;
+  display: flex;
+  justify-content: center;
+}
+
+.aanbod-hero-mascot .mascot-img { width: 190px; }
+
 .profile-banner {
-  margin-top: 18px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.3);
+  margin: 24px auto 0;
+  max-width: 540px;
+  background: white;
+  border: 1px solid rgba(58,44,32,0.1);
   border-radius: 16px;
   padding: 14px 18px;
   display: flex;
@@ -589,10 +635,11 @@ img { max-width: 100%; display: block; }
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+  box-shadow: 0 10px 24px rgba(58,44,32,0.1);
 }
 
-.profile-banner span { color: white; font-size: 13px; font-weight: 600; }
-.profile-banner a { color: white; font-size: 13px; font-weight: 800; text-decoration: underline; }
+.profile-banner span { color: var(--ink); font-size: 13px; font-weight: 600; }
+.profile-banner a { color: var(--brand-accent); font-size: 13px; font-weight: 800; text-decoration: underline; }
 
 .filter-bar {
   background: white;
@@ -965,4 +1012,7 @@ img { max-width: 100%; display: block; }
   .store-row { flex-direction: column; align-items: flex-start; }
   .site-footer .container { flex-direction: column; align-items: flex-start; text-align: left; }
   .product-grid { grid-template-columns: 1fr; }
+  .aanbod-hero { min-height: 0; padding: 48px 0; }
+  .aanbod-hero-inner { flex-direction: column; }
+  .aanbod-search-block { align-items: center; text-align: center; width: 100%; }
 }

@@ -585,20 +585,12 @@ img { max-width: 100%; display: block; }
 
 .aanbod-hero-inner {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 40px;
-  flex-wrap: wrap;
-}
-
-.aanbod-search-block {
-  flex: 0 1 540px;
-  display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  gap: 36px;
 }
 
-.aanbod-speech-bubble { max-width: 380px; }
+.aanbod-speech-bubble { max-width: 320px; }
 
 /* Chatvenster-achtige zoekbox: tekstregel boven, dun lijntje, daaronder een
    zoekicoon en een ronde verzendknop — ter inspiratie meegegeven door de klant. */
@@ -665,9 +657,9 @@ img { max-width: 100%; display: block; }
 }
 
 .aanbod-hero-mascot {
-  flex: 0 0 200px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .aanbod-hero-mascot .mascot-img { width: 190px; }
@@ -1062,6 +1054,4 @@ img { max-width: 100%; display: block; }
   .site-footer .container { flex-direction: column; align-items: flex-start; text-align: left; }
   .product-grid { grid-template-columns: 1fr; }
   .aanbod-hero { min-height: 0; padding: 48px 0; }
-  .aanbod-hero-inner { flex-direction: column; }
-  .aanbod-search-block { align-items: center; text-align: center; width: 100%; }
 }

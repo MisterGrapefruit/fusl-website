@@ -600,20 +600,69 @@ img { max-width: 100%; display: block; }
 
 .aanbod-speech-bubble { max-width: 380px; }
 
-.aanbod-search-input {
+/* Chatvenster-achtige zoekbox: tekstregel boven, dun lijntje, daaronder een
+   zoekicoon en een ronde verzendknop — ter inspiratie meegegeven door de klant. */
+.aanbod-search-box {
   width: 100%;
   max-width: 540px;
-  padding: 19px 30px;
-  border-radius: 100px;
-  border: none;
-  font-family: 'Manrope', sans-serif;
-  font-size: 17px;
-  color: var(--ink);
   background: white;
+  border-radius: 28px;
+  padding: 22px 26px 14px;
   box-shadow: 0 16px 36px rgba(58,44,32,0.18);
 }
 
-.aanbod-search-input:focus { outline: 2px solid var(--brand-accent); }
+.aanbod-search-input {
+  display: block;
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 0 0 18px;
+  font-family: 'Manrope', sans-serif;
+  font-style: italic;
+  font-size: 17px;
+  color: var(--ink);
+  background: transparent;
+}
+
+.aanbod-search-input::placeholder { color: rgba(58,44,32,0.4); }
+
+.aanbod-search-box-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid rgba(58,44,32,0.12);
+}
+
+.aanbod-search-box-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(58,44,32,0.35);
+}
+
+.aanbod-search-submit {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: none;
+  background: var(--brand-accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.aanbod-search-submit:hover { transform: scale(1.08); }
+
+.aanbod-search-submit:disabled {
+  background: rgba(58,44,32,0.18);
+  cursor: default;
+  transform: none;
+}
 
 .aanbod-hero-mascot {
   flex: 0 0 200px;

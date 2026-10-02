@@ -30,7 +30,17 @@
     <div class="aanbod-hero-inner">
       <div class="aanbod-search-block">
         <div class="speech-bubble aanbod-speech-bubble">Vertel me wat voor meubel je zoekt, dan zoek ik de beste aanbiedingen voor je!</div>
-        <input type="text" class="search-input aanbod-search-input" id="search-input" placeholder="Bijv. bank, eettafel, Scandinavisch…" autocomplete="off">
+        <div class="aanbod-search-box">
+          <input type="text" class="aanbod-search-input" id="search-input" placeholder="Bijv. een Scandinavische bank…" autocomplete="off">
+          <div class="aanbod-search-box-footer">
+            <span class="aanbod-search-box-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            <button type="button" class="aanbod-search-submit" id="search-submit" aria-label="Zoeken" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 19V5M5 12l7-7 7 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
       </div>
       <div class="aanbod-hero-mascot">
         <img src="images/capy-full.png" alt="Capy, de FUSL-mascotte" class="mascot-img">
@@ -236,10 +246,31 @@
     });
   }
 
-  document.getElementById('search-input').addEventListener('input', function (e) {
+  var searchInput = document.getElementById('search-input');
+  var searchSubmit = document.getElementById('search-submit');
+
+  function updateSearchSubmit() {
+    searchSubmit.disabled = !hasSearch();
+  }
+
+  function goToResults() {
+    if (!hasSearch()) { searchInput.focus(); return; }
+    searchInput.blur();
+    var bar = document.getElementById('filter-bar');
+    if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  searchInput.addEventListener('input', function (e) {
     state.search = e.target.value;
+    updateSearchSubmit();
     render();
   });
+
+  searchInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') goToResults();
+  });
+
+  searchSubmit.addEventListener('click', goToResults);
 
   document.getElementById('category-filters').addEventListener('click', function (e) {
     if (!e.target.matches('.pill')) return;

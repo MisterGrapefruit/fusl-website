@@ -15,16 +15,22 @@
 var SAMPLE_PRODUCTS = [
   { id: 1, name: 'Hudson driezitsbank', category: 'bank', color: 'Groen', style: 'Landelijk', store: 'Woonstijl Verhoeven', type: 'lokaal', price: 899, salePrice: null, status: 'Showroommodel' },
   { id: 2, name: 'Oslo bank', category: 'bank', color: 'Wit', style: 'Scandinavisch', store: 'Meubelhuis Noord', type: 'lokaal', price: 749, salePrice: null, status: 'In de verkoop' },
-  { id: 3, name: 'Chesterfield tweezits', category: 'bank', color: 'Terracotta', style: 'Hip', store: 'StudioKleur', type: 'lokaal', price: 1099, salePrice: null, status: 'Showroommodel' },
+  { id: 3, name: 'Chesterfield tweezits', category: 'bank', color: 'Terracotta', style: 'Retro', store: 'StudioKleur', type: 'lokaal', price: 1099, salePrice: null, status: 'Showroommodel' },
   { id: 4, name: 'Robuuste eikentafel', category: 'eettafel', color: 'Naturel hout', style: 'Landelijk', store: 'Interimo', type: 'keten', price: 625, salePrice: null, status: 'Showroommodel' },
   { id: 5, name: 'Ronde tafel Malmö', category: 'eettafel', color: 'Wit', style: 'Scandinavisch', store: 'De Eetkamerzaak', type: 'lokaal', price: 399, salePrice: null, status: 'In de verkoop' },
   { id: 6, name: 'Industriële statafel', category: 'eettafel', color: 'Zwart', style: 'Industrieel', store: 'MetaalWerk Interieur', type: 'keten', price: 480, salePrice: null, status: 'In de verkoop' },
   { id: 7, name: 'Industriële wandkast', category: 'kast', color: 'Zwart', style: 'Industrieel', store: 'MetaalWerk Interieur', type: 'keten', price: 540, salePrice: null, status: 'Showroommodel' },
-  { id: 8, name: 'Boekenkast Beuk', category: 'kast', color: 'Naturel hout', style: 'Beige', store: 'Woonstijl Verhoeven', type: 'lokaal', price: 310, salePrice: null, status: 'In de verkoop' },
+  { id: 8, name: 'Boekenkast Beuk', category: 'kast', color: 'Naturel hout', style: 'Warm Minimalisme', store: 'Woonstijl Verhoeven', type: 'lokaal', price: 310, salePrice: null, status: 'In de verkoop' },
   { id: 9, name: 'Vitrinekast landelijk', category: 'kast', color: 'Naturel hout', style: 'Landelijk', store: 'Woonstijl Verhoeven', type: 'lokaal', price: 420, salePrice: null, status: 'Showroommodel' },
-  { id: 10, name: 'Fluwelen eetkamerstoel', category: 'stoel', color: 'Terracotta', style: 'Hip', store: 'StudioKleur', type: 'lokaal', price: 149, salePrice: null, status: 'In de verkoop' },
+  { id: 10, name: 'Fluwelen eetkamerstoel', category: 'stoel', color: 'Terracotta', style: 'Retro', store: 'StudioKleur', type: 'lokaal', price: 149, salePrice: null, status: 'In de verkoop' },
   { id: 11, name: 'Lounge fauteuil', category: 'stoel', color: 'Donkerblauw', style: 'Knus', store: 'Interimo', type: 'keten', price: 289, salePrice: null, status: 'Showroommodel' },
-  { id: 12, name: 'Scandinavische eetkamerstoel', category: 'stoel', color: 'Grijs', style: 'Scandinavisch', store: 'De Eetkamerzaak', type: 'lokaal', price: 89, salePrice: null, status: 'In de verkoop' }
+  { id: 12, name: 'Scandinavische eetkamerstoel', category: 'stoel', color: 'Grijs', style: 'Scandinavisch', store: 'De Eetkamerzaak', type: 'lokaal', price: 89, salePrice: null, status: 'In de verkoop' },
+  { id: 13, name: 'Eiken tv-meubel laag', category: 'kast', color: 'Naturel hout', style: 'Japandi', store: 'Woonstijl Verhoeven', type: 'lokaal', price: 365, salePrice: null, status: 'Showroommodel' },
+  { id: 14, name: 'Rotan hangstoel', category: 'stoel', color: 'Naturel hout', style: 'Bohemien', store: 'StudioKleur', type: 'lokaal', price: 219, salePrice: null, status: 'In de verkoop' },
+  { id: 15, name: 'Fluwelen chesterfield bank', category: 'bank', color: 'Donkerblauw', style: 'Klassiek', store: 'Meubelhuis Noord', type: 'lokaal', price: 1249, salePrice: null, status: 'Showroommodel' },
+  { id: 16, name: 'Rieten loungestoel', category: 'stoel', color: 'Wit', style: 'Kuststijl', store: 'De Eetkamerzaak', type: 'lokaal', price: 179, salePrice: null, status: 'In de verkoop' },
+  { id: 17, name: 'Art Deco dressoir', category: 'kast', color: 'Zwart', style: 'Art Deco', store: 'Interimo', type: 'keten', price: 590, salePrice: null, status: 'Showroommodel' },
+  { id: 18, name: 'Patchwork bank', category: 'bank', color: 'Terracotta', style: 'Maximalistisch', store: 'StudioKleur', type: 'lokaal', price: 975, salePrice: null, status: 'In de verkoop' }
 ];
 
 // Zet een genormaliseerde aanbod.json-listing om naar hetzelfde vorm als

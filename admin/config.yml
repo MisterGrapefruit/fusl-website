@@ -21,6 +21,15 @@ collections:
           - { label: "Tekst onder de titel", name: "heroText", widget: "text" }
           - { label: "Tekst in Capy's spreekbubbel", name: "mascotSpeech", widget: "string" }
 
+  - name: "instellingen"
+    label: "Instellingen"
+    files:
+      - file: "data/analytics-config.json"
+        label: "Analytics (Google Analytics 4)"
+        name: "analytics_config"
+        fields:
+          - { label: "GA4 Measurement ID (begint met 'G-')", name: "ga4MeasurementId", widget: "string", required: false, hint: "Leeg laten = geen analytics geladen. Zie ANALYTICS-SETUP.md voor hoe je er zelf een aanmaakt." }
+
   - name: "over_ons"
     label: "Over ons"
     files:

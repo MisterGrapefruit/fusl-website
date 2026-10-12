@@ -95,6 +95,7 @@
 <script src="js/profile.js"></script>
 <script src="js/favorites.js"></script>
 <script src="js/aanbod-data.js"></script>
+<script src="js/analytics.js"></script>
 <script>
   var colorHex = {};
   FUSL_COLORS.forEach(function (c) { colorHex[c.name] = c.hex; });
@@ -251,10 +252,18 @@
       if (p.productUrl) {
         var storeLink = document.createElement('a');
         storeLink.className = 'btn-store-link';
-        storeLink.href = p.productUrl;
+        // UTM-parameters zodat de winkel zelf ook ziet dat dit bezoek van FUSL
+        // komt, plus (met toestemming) een eigen "winkel_klik"-event in GA4 —
+        // FUSL's eigen, onafhankelijke telling van doorverwezen bezoekers.
+        storeLink.href = typeof fuslWithUtm === 'function' ? fuslWithUtm(p.productUrl, { content: p.category }) : p.productUrl;
         storeLink.target = '_blank';
         storeLink.rel = 'noopener sponsored';
         storeLink.textContent = 'Bekijk bij ' + p.store + ' →';
+        storeLink.addEventListener('click', function () {
+          if (typeof fuslTrackStoreClick === 'function') {
+            fuslTrackStoreClick({ winkelNaam: p.store, winkelType: p.type, categorie: p.category, productNaam: p.name });
+          }
+        });
         body.appendChild(storeLink);
       }
 

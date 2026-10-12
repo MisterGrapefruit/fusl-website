@@ -1042,6 +1042,29 @@ img { max-width: 100%; display: block; }
 }
 .save-indicator.show { opacity: 1; }
 
+/* Cookiebalkje (verschijnt alleen als er een GA4 Measurement ID is ingesteld) */
+.cookie-banner {
+  position: fixed;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1000;
+  max-width: 640px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(58,44,32,0.25);
+  padding: 18px 22px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.cookie-banner-text { font-size: 13px; color: var(--ink); line-height: 1.5; flex: 1 1 320px; }
+.cookie-banner-actions { display: flex; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
+
 /* Responsive */
 @media (max-width: 760px) {
   .hero h1 { font-size: 34px; }
@@ -1054,4 +1077,5 @@ img { max-width: 100%; display: block; }
   .site-footer .container { flex-direction: column; align-items: flex-start; text-align: left; }
   .product-grid { grid-template-columns: 1fr; }
   .aanbod-hero { min-height: 0; padding: 48px 0; }
+  .cookie-banner { left: 12px; right: 12px; bottom: 12px; padding: 16px; }
 }

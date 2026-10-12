@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="aanbod-hero-mascot">
-        <div class="speech-bubble aanbod-speech-bubble">Vertel me wat voor meubel je zoekt, dan zoek ik de beste aanbiedingen voor je!</div>
+        <div class="speech-bubble aanbod-speech-bubble" id="aanbod-capy-line">Vertel me wat voor meubel je zoekt, dan zoek ik de beste aanbiedingen voor je!</div>
         <img src="images/capy-full.png" alt="Capy, de FUSL-mascotte" class="mascot-img">
       </div>
     </div>
@@ -103,24 +103,43 @@
   var profile = fuslGetProfile();
   var PRODUCTS = SAMPLE_PRODUCTS; // wordt aangevuld/vervangen zodra live winkelaanbod geladen is
 
-  // Pas als er iets getypt is, tonen we filters, profielbanner en resultaten —
-  // daarvoor houden we de pagina bewust rustig (alleen Capy + zoekbalk).
+  // Als er iets getypt is, tonen we filters/resultaten — daarvoor houden we
+  // de pagina bewust rustig (alleen Capy + zoekbalk). Heb je op de stijlpagina
+  // (of via de swipe-vragenlijst) al voorkeuren vastgelegd, dan slaan we die
+  // kale, "algemene" zoekpagina over: dan tonen we meteen een gefilterd/
+  // gesorteerd aanbod, een stap verder dan de generieke lege pagina.
   function hasSearch() {
     return state.search.trim().length > 0;
   }
 
-  function updateProfileBanner() {
-    var banner = document.getElementById('profile-banner');
+  function hasProfile() {
     var hasStyles = profile.roomStyles && profile.roomStyles.length > 0;
     var hasColors = profile.colors && Object.keys(profile.colors).length > 0;
-    if (!hasSearch() || (!hasStyles && !hasColors)) {
+    return hasStyles || hasColors;
+  }
+
+  function shouldReveal() {
+    return hasSearch() || hasProfile();
+  }
+
+  function updateCapyLine() {
+    var line = document.getElementById('aanbod-capy-line');
+    if (!line) return;
+    line.textContent = hasProfile()
+      ? 'Welkom terug! Ik heb je aanbod alvast afgestemd op jouw stijl — typ iets om nog specifieker te zoeken.'
+      : 'Vertel me wat voor meubel je zoekt, dan zoek ik de beste aanbiedingen voor je!';
+  }
+
+  function updateProfileBanner() {
+    var banner = document.getElementById('profile-banner');
+    if (!shouldReveal() || !hasProfile()) {
       banner.style.display = 'none';
       return;
     }
     var text = document.getElementById('profile-banner-text');
     var parts = [];
-    if (hasStyles) parts.push((profile.roomStyles.length > 1 ? 'stijlen ' : 'stijl ') + profile.roomStyles.join(', '));
-    if (hasColors) parts.push(Object.keys(profile.colors).length + ' kleurvoorkeur(en)');
+    if (profile.roomStyles && profile.roomStyles.length) parts.push((profile.roomStyles.length > 1 ? 'stijlen ' : 'stijl ') + profile.roomStyles.join(', '));
+    if (profile.colors && Object.keys(profile.colors).length) parts.push(Object.keys(profile.colors).length + ' kleurvoorkeur(en)');
     text.textContent = 'Gefilterd op basis van jouw profiel: ' + parts.join(', ') + '.';
     banner.style.display = 'flex';
   }
@@ -139,8 +158,9 @@
     var filterBar = document.getElementById('filter-bar');
 
     updateProfileBanner();
+    updateCapyLine();
 
-    if (!hasSearch()) {
+    if (!shouldReveal()) {
       filterBar.hidden = true;
       grid.innerHTML = '';
       return;
@@ -252,7 +272,7 @@
   }
 
   function goToResults() {
-    if (!hasSearch()) { searchInput.focus(); return; }
+    if (!shouldReveal()) { searchInput.focus(); return; }
     searchInput.blur();
     var bar = document.getElementById('filter-bar');
     if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'start' });

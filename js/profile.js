@@ -47,3 +47,15 @@ function fuslSaveProfile(partial) {
   }
   return next;
 }
+
+// Wist het opgeslagen smaakprofiel (stijlen + kleurvoorkeuren) volledig, zodat
+// iemand weer helemaal blanco kan beginnen — bv. via "Voorkeuren wissen" op
+// de aanbodpagina. Favorieten blijven bewust ongemoeid; dat is een los begrip.
+function fuslResetProfile() {
+  try {
+    window.localStorage.removeItem(FUSL_PROFILE_KEY);
+  } catch (e) {
+    // localStorage niet beschikbaar — er was toch al geen profiel dat blijft hangen.
+  }
+  return { roomStyles: [], colors: {} };
+}

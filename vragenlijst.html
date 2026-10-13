@@ -50,6 +50,12 @@
           <label class="filter-check"><input type="checkbox" value="kast" checked> <span>🗄️ Kast</span></label>
           <label class="filter-check"><input type="checkbox" value="bed" checked> <span>🛏️ Bed</span></label>
         </div>
+
+        <div class="filter-swipe-limit">
+          <h3>Hoeveel wil je swipen?</h3>
+          <input type="range" id="swipe-limit-slider" min="5" max="25" step="5" value="25" aria-describedby="swipe-limit-value">
+          <div class="filter-swipe-limit-value" id="swipe-limit-value">Alles</div>
+        </div>
       </aside>
 
       <div class="swipe-main">
@@ -124,9 +130,45 @@
   var judgedIds = {};
   var liked = [];
   var deck = [];
+  var deckStartSize = 0;
   var selectedCategories = {};
   Object.keys(CATEGORY_LABELS).forEach(function (c) { selectedCategories[c] = true; });
   var frontProduct = null;
+
+  // swipeLimit begrenst hoeveel kaarten er in één stapel komen (Infinity =
+  // "Alles", de standaardwaarde zodat het gedrag zonder aanraken van de
+  // schuifbalk ongewijzigd blijft).
+  var swipeLimit = Infinity;
+  var swipeLimitSlider = document.getElementById('swipe-limit-slider');
+  var swipeLimitValueEl = document.getElementById('swipe-limit-value');
+
+  function initSwipeLimitSlider() {
+    var total = SAMPLE_PRODUCTS.length;
+    var max = Math.max(5, Math.ceil(total / 5) * 5);
+    swipeLimitSlider.max = String(max);
+    swipeLimitSlider.value = String(max);
+    updateSwipeLimitLabel();
+  }
+
+  function updateSwipeLimitLabel() {
+    var val = parseInt(swipeLimitSlider.value, 10);
+    var max = parseInt(swipeLimitSlider.max, 10);
+    if (val >= max) {
+      swipeLimit = Infinity;
+      swipeLimitValueEl.textContent = 'Alles';
+    } else {
+      swipeLimit = val;
+      swipeLimitValueEl.textContent = val + ' kaarten';
+    }
+  }
+
+  swipeLimitSlider.addEventListener('input', updateSwipeLimitLabel);
+  swipeLimitSlider.addEventListener('change', function () {
+    // Nieuwe limiet toepassen op een verse stapel; al geswipete kaarten
+    // (judgedIds) blijven vanzelfsprekend overgeslagen.
+    rebuildDeck();
+    renderStage();
+  });
 
   var stage = document.getElementById('swipe-stage');
 
@@ -148,17 +190,16 @@
     });
   }
 
-  // Totaal/gedaan binnen het huidige filter — los van judgedIds buiten het
-  // filter, zodat de voortgangsbalk klopt met wat je nu daadwerkelijk ziet.
+  // Zijn er binnen het huidige meubelsoort-filter überhaupt kaarten? Los van
+  // judgedIds en swipeLimit — dit bepaalt alleen of het filter zelf leeg is.
   function filterTotal() {
     return SAMPLE_PRODUCTS.filter(function (p) { return categoryAllowed(p.category); }).length;
   }
-  function filterDone() {
-    return SAMPLE_PRODUCTS.filter(function (p) { return categoryAllowed(p.category) && judgedIds[p.id]; }).length;
-  }
 
   function rebuildDeck() {
-    deck = shuffle(availableProducts());
+    var pool = shuffle(availableProducts());
+    deck = isFinite(swipeLimit) ? pool.slice(0, swipeLimit) : pool;
+    deckStartSize = deck.length;
   }
 
   function applyCategoryFilter() {
@@ -210,8 +251,8 @@
   function updateProgress() {
     var track = document.getElementById('swipe-progress-bar');
     var label = document.getElementById('swipe-progress-label');
-    var total = filterTotal();
-    var done = filterDone();
+    var total = deckStartSize;
+    var done = total - deck.length;
     var pct = total ? Math.min(100, (done / total) * 100) : 100;
     track.style.width = pct + '%';
     label.textContent = deck.length === 0 ? 'Klaar!' : ('Kaart ' + (done + 1) + ' van ' + total);
@@ -474,6 +515,7 @@
     renderStage();
   });
 
+  initSwipeLimitSlider();
   rebuildDeck();
   renderStage();
 </script>

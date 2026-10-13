@@ -46,7 +46,10 @@
     </div>
     <div class="profile-banner" id="profile-banner" style="display: none;">
       <span id="profile-banner-text"></span>
-      <a href="vragenlijst.html">Wijzig je voorkeuren</a>
+      <div class="profile-banner-actions">
+        <a href="vragenlijst.html">Wijzig je voorkeuren</a>
+        <button type="button" class="link-btn" id="reset-profile-btn">Voorkeuren wissen</button>
+      </div>
     </div>
   </div>
 </header>
@@ -322,6 +325,21 @@
     this.querySelectorAll('.pill').forEach(function (p) { p.classList.remove('active'); });
     if (state.deal !== 'alles') e.target.classList.add('active');
     render();
+  });
+
+  document.getElementById('reset-profile-btn').addEventListener('click', function () {
+    profile = fuslResetProfile();
+    state = { search: '', category: 'alles', type: 'alles', deal: 'alles', favoritesOnly: false };
+    searchInput.value = '';
+    updateSearchSubmit();
+    // Zet ook de filterpillen visueel terug op "Alles".
+    document.querySelectorAll('#category-filters .pill, #type-filters .pill, #deal-filters .pill, #fav-filters .pill').forEach(function (p) {
+      p.classList.remove('active');
+    });
+    document.querySelector('#category-filters .pill[data-category="alles"]').classList.add('active');
+    document.querySelector('#type-filters .pill[data-type="alles"]').classList.add('active');
+    render();
+    searchInput.focus();
   });
 
   document.getElementById('fav-filters').addEventListener('click', function (e) {

@@ -583,23 +583,28 @@ img { max-width: 100%; display: block; }
 .aanbod-hero .container { position: relative; }
 
 /* Zoekbox en Capy naast elkaar (in plaats van onder elkaar), zodat de hero
-   compacter is en je na het zoeken niet eerst langs Capy hoeft te scrollen. */
+   compacter is en je na het zoeken niet eerst langs Capy hoeft te scrollen.
+   flex-wrap staat bewust op nowrap: met de eerdere, ruimere maten lagen de
+   twee elementen net op de grens van passen/niet-passen, waardoor ze op
+   veel gangbare vensterbreedtes toch onder elkaar bleven staan. Met de
+   kleinere maten hieronder (en nowrap) passen ze gegarandeerd naast elkaar
+   zodra je boven de mobiele breakpoint (760px) zit. */
 .aanbod-hero-inner {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: 20px;
 }
 
-.aanbod-speech-bubble { max-width: 256px; }
+.aanbod-speech-bubble { max-width: 200px; }
 
 /* Chatvenster-achtige zoekbox: tekstregel boven, dun lijntje, daaronder een
    zoekicoon en een ronde verzendknop — ter inspiratie meegegeven door de klant. */
 .aanbod-search-box {
-  flex: 1 1 420px;
-  max-width: 480px;
+  flex: 1 1 260px;
+  max-width: 400px;
   background: white;
   border-radius: 28px;
   padding: 22px 26px 14px;
@@ -666,8 +671,9 @@ img { max-width: 100%; display: block; }
   flex: 0 0 auto;
 }
 
-/* 20% kleiner dan voorheen (190px -> 152px) nu Capy naast de zoekbalk staat. */
-.aanbod-hero-mascot .mascot-img { width: 152px; }
+/* Nog eens kleiner (190px -> 152px -> 118px) nu Capy echt naast de zoekbalk
+   staat, zodat hij ernaast past zonder de hero te veel breedte te geven. */
+.aanbod-hero-mascot .mascot-img { width: 118px; }
 
 .profile-banner {
   margin: 24px auto 0;

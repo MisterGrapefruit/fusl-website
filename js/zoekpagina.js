@@ -1,6 +1,8 @@
 // Zoekpagina (aanbod.html): zoekbalk die filters instelt, filterbalk,
 // sorteren, "dichtst in de buurt" en de stijlschakelaar.
 (function () {
+  // Oude link naar de favorieten: die staan nu op een eigen pagina
+  if (location.hash === '#favorieten') { location.replace('selectie.html'); return; }
   var COLOR_HEX = {};
   FUSL_COLORS.forEach(function (c) { COLOR_HEX[c.name] = c.hex; });
   COLOR_HEX['Wit'] = '#ebe6dc'; // anders valt een wit stuk weg tegen de witte kaart
@@ -55,8 +57,7 @@
     released: false,
     open: null,
     sort: 'relevantie',
-    pcError: '',
-    selection: false
+    pcError: ''
   };
   if (arriveFromStyle) state.f.styles = mixNames.slice();
 
@@ -109,8 +110,6 @@
     state.aiKeys = keys;
     state.released = released;
     state.open = null;
-    state.selection = false;
-    if (location.hash === '#favorieten') history.replaceState(null, '', location.pathname + location.search);
     render();
   }
 
@@ -321,23 +320,6 @@
     var noExact = false;
     var list;
 
-    document.getElementById('zk-selection-head').hidden = !state.selection;
-    document.getElementById('zk-filterbar').hidden = state.selection;
-    document.querySelector('.zk-sort').hidden = state.selection;
-
-    if (state.selection) {
-      var favs = fuslGetFavorites();
-      list = PRODUCTS.filter(function (p) { return favs.indexOf(String(p.id)) >= 0; });
-      title.textContent = 'Mijn selectie · ' + (list.length === 1 ? '1 stuk' : list.length + ' stukken');
-      document.getElementById('zk-noexact').hidden = true;
-      document.getElementById('zk-nounderstand').hidden = true;
-      grid.innerHTML = list.length
-        ? list.map(function (p) { return cardHtml(p); }).join('')
-        : '<div class="zk-empty">Nog niets bewaard. Tik op het hartje bij een stuk om het in je selectie te zetten.</div>';
-      document.getElementById('zk-savedbar').hidden = true;
-      return;
-    }
-
     var exact = PRODUCTS.filter(function (p) { return fuslFits(p, f, kmOf); });
     if (exact.length || !any) {
       list = exact.slice().sort(order);
@@ -395,12 +377,6 @@
   });
   document.getElementById('zk-clear-all').addEventListener('click', clearAll);
   document.getElementById('zk-sort').addEventListener('change', function (e) { state.sort = e.target.value; render(); });
-  document.getElementById('zk-back').addEventListener('click', function () {
-    history.pushState(null, '', location.pathname + location.search);
-    state.selection = false;
-    render();
-  });
-
   var filterbar = document.getElementById('zk-filterbar');
   filterbar.addEventListener('click', function (e) {
     var t = e.target.closest('button');
@@ -467,7 +443,7 @@
     var heart = e.target.closest('[data-fav]');
     if (heart) {
       var id = heart.getAttribute('data-fav');
-      fuslToggleFavorite(id);
+      fuslToggleFavorite(id, PRODUCTS.filter(function (x) { return String(x.id) === id; })[0]);
       render();
       var again = document.querySelector('[data-fav="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]');
       if (again) again.focus();
@@ -480,17 +456,8 @@
     }
   });
 
-  // "Mijn selectie" in het menu (tot de aparte selectiepagina er is)
-  function applyHash() {
-    state.selection = location.hash === '#favorieten';
-    render();
-  }
-  window.addEventListener('hashchange', applyHash);
-  window.addEventListener('popstate', applyHash);
-
   // Zoekopdracht via de link (?q=...), bijv. vanaf de homepage
   if (params.get('q')) { input.value = params.get('q'); run(params.get('q')); }
-  state.selection = location.hash === '#favorieten';
   render();
 
   fuslLoadStores(function (stores) { STORES = stores; resetKm(); render(); });

@@ -4,6 +4,7 @@
 // eigen woordenlijsten in de browser.
 
 import { aiAan, json, magGebruiken, vraagClaude, STIJLEN, KLEUREN, SOORTEN } from '../lib/ai.mjs';
+import { testDetail } from '../lib/ai.mjs';
 
 const TOOL = {
   name: 'zet_filters',
@@ -54,7 +55,7 @@ export default async (req, context) => {
     });
   } catch (e) {
     console.error('zoek-ai', e.message);
-    return json({ fout: 'AI tijdelijk niet bereikbaar.' }, 502);
+    return json(Object.assign({ fout: 'AI tijdelijk niet bereikbaar.' }, testDetail(context, e)), 502);
   }
 };
 

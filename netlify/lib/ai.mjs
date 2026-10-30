@@ -81,3 +81,10 @@ export async function vraagClaude(context, { systeem, inhoud, tool, maxTokens = 
     clearTimeout(timer);
   }
 }
+
+// Op testversies (deploy previews) geven we de technische foutmelding mee,
+// zodat problemen te vinden zijn. Op de echte site nooit.
+export function testDetail(context, e) {
+  const omgeving = context && context.deploy && context.deploy.context;
+  return omgeving && omgeving !== 'production' ? { detail: String(e && e.message || e).slice(0, 300) } : {};
+}

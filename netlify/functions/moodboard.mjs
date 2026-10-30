@@ -4,6 +4,7 @@
 // analyse naar Claude gestuurd en nergens bewaard.
 
 import { aiAan, json, magGebruiken, vraagClaude, STIJLEN, KLEUREN } from '../lib/ai.mjs';
+import { testDetail } from '../lib/ai.mjs';
 
 const MAX_BEELDEN = 10;
 const MAX_BYTES = 5.5 * 1024 * 1024;
@@ -69,7 +70,7 @@ export default async (req, context) => {
     });
   } catch (e) {
     console.error('moodboard-ai', e.message);
-    return json({ fout: 'Capy kan je moodboard nu even niet bekijken. Probeer het later nog eens of kies zelf kamers.' }, 502);
+    return json(Object.assign({ fout: 'Capy kan je moodboard nu even niet bekijken. Probeer het later nog eens of kies zelf kamers.' }, testDetail(context, e)), 502);
   }
 };
 

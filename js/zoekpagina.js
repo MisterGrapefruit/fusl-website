@@ -300,6 +300,19 @@
       '</div></article>';
   }
 
+  // "bank of stoel · rood / terracotta · € 400 – € 600" voor de melding bij geen resultaat
+  function describeFilters(f) {
+    var of = function (arr) { return arr.length > 1 ? arr.slice(0, -1).join(', ') + ' of ' + arr[arr.length - 1] : arr[0]; };
+    var parts = [];
+    if (f.cats.length) parts.push(of(f.cats.map(function (c) { return CAT_LABEL[c].toLowerCase(); })));
+    if (f.styles.length) parts.push(of(f.styles.map(function (x) { return x.toLowerCase(); })));
+    if (f.colors.length) parts.push(of(f.colors.map(function (c) { return (FUSL_COLOR_LABEL[c] || c).toLowerCase(); })));
+    if (f.min != null || f.max != null) parts.push(priceLabel(f).toLowerCase());
+    if (f.shop) parts.push(f.shop === 'lokaal' ? 'zelfstandige winkel' : 'keten');
+    if (f.maxKm) parts.push('binnen ' + f.maxKm + ' km');
+    return parts.join(' · ');
+  }
+
   function renderResults() {
     var f = state.f;
     var grid = document.getElementById('zk-grid');
@@ -337,17 +350,18 @@
     }
 
     var otherFilters = f.cats.length || f.colors.length || f.min != null || f.max != null || f.shop || f.maxKm;
-    if (noExact) title.textContent = 'Dit komt het dichtst in de buurt';
+    if (noExact) title.textContent = list.length === 1 ? '1 alternatief' : list.length + ' alternatieven';
     else if (arriveFromStyle && mixActive() && !state.searched && !otherFilters) title.textContent = 'Dit past bij jouw stijl · ' + list.length + ' stukken';
     else if (!any) title.textContent = 'Alle stukken · ' + list.length;
     else title.textContent = list.length === 1 ? '1 stuk' : list.length + ' stukken';
 
     document.getElementById('zk-noexact').hidden = !noExact || !list.length;
+    if (noExact) document.getElementById('zk-noexact-wanted').textContent = 'Je zocht: ' + describeFilters(f) + '.';
     document.getElementById('zk-nounderstand').hidden = !(state.searched && state.q.trim() && !state.aiKeys.length);
 
     grid.innerHTML = list.length
       ? list.map(function (p) { return cardHtml(p, noExact ? fuslDiffs(p, f, kmOf) : null); }).join('')
-      : '<div class="zk-empty">Niets gevonden dat in de buurt komt. <button type="button" class="zk-link-btn" data-clear-all>Wis alle filters</button></div>';
+      : '<div class="zk-empty"><strong>Sorry, er is geen stuk dat aan je voorwaarden voldoet.</strong><br>Er is ook niets dat er dichtbij komt. Pas een filter aan of <button type="button" class="zk-link-btn" data-clear-all>wis alle filters</button>.</div>';
 
     var count = fuslGetFavorites().filter(function (id) { return PRODUCTS.some(function (p) { return String(p.id) === id; }); }).length;
     document.getElementById('zk-savedbar').hidden = count === 0;

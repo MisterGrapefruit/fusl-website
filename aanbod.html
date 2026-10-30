@@ -67,6 +67,16 @@
 <main class="container zk-main">
   <div class="zk-notice" id="zk-nounderstand" hidden>Capy herkende geen meubelsoort, kleur, prijs of stijl in je zoekopdracht. Probeer bijvoorbeeld "houten eettafel onder de 500 euro", of kies hierboven zelf een filter.</div>
 
+  <div class="zk-noexact" id="zk-noexact" role="status" hidden>
+    <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>
+    <div>
+      <strong>Sorry, er is geen stuk dat aan al je voorwaarden voldoet.</strong>
+      <span id="zk-noexact-wanted"></span>
+      <span>Hieronder een paar alternatieven die er het dichtst bij komen. Bij elk stuk staat wat afwijkt.</span>
+      <span class="zk-noexact-actions">Pas een filter aan of <button type="button" class="zk-link-btn" data-clear-all>wis alle filters</button>.</span>
+    </div>
+  </div>
+
   <div class="zk-head">
     <h2 id="zk-title">Alle stukken</h2>
     <span class="zk-sort">
@@ -83,11 +93,6 @@
 
   <div class="zk-selection-head" id="zk-selection-head" hidden>
     <button type="button" class="text-link" id="zk-back">← Terug naar alle stukken</button>
-  </div>
-
-  <div class="zk-noexact" id="zk-noexact" hidden>
-    <span>Geen stuk dat aan al je filters voldoet. Dit komt het dichtst in de buurt; wat afwijkt staat erbij.</span>
-    <button type="button" class="zk-link-btn" data-clear-all>Wis alle filters</button>
   </div>
 
   <div class="zk-grid" id="zk-grid" aria-live="polite"></div>

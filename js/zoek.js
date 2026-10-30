@@ -153,3 +153,34 @@ function fuslGeocodePostcode(pc) {
       return { postcode: norm, plaats: doc.woonplaatsnaam || '', lat: +m[2], lng: +m[1] };
     });
 }
+
+// ---------- Slimme zoekfunctie (fase 5) ----------
+// Vraagt de AI-functie om de zoekzin te begrijpen. Valt bij elke fout (geen
+// sleutel ingesteld, limiet, traag netwerk) stil terug op fuslParseQuery.
+// Resultaat: { parsed, bron: 'ai' | 'lokaal' }.
+function fuslSmartParse(q) {
+  var local = function () { return { parsed: fuslParseQuery(q), bron: 'lokaal' }; };
+  if (typeof fetch !== 'function' || !/^https?:/.test(location.protocol)) return Promise.resolve(local());
+  var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+  var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 6000);
+  return fetch('/api/zoek', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ q: q }), signal: ctrl ? ctrl.signal : undefined
+  }).then(function (res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }).then(function (d) {
+    var f = d && d.filters;
+    if (!f) throw new Error('leeg');
+    var parsed = {};
+    if (f.cats && f.cats.length) parsed.cats = f.cats;
+    if (f.styles && f.styles.length) parsed.styles = f.styles;
+    if (f.colors && f.colors.length) parsed.colors = f.colors;
+    if (f.min != null || f.max != null) { parsed.min = f.min; parsed.max = f.max; }
+    if (f.shop) parsed.shop = f.shop;
+    // Herkent de AI niets maar de woordenlijst wel, dan die gebruiken.
+    if (!Object.keys(parsed).length) return local();
+    return { parsed: parsed, bron: 'ai' };
+  }).catch(function () { return local(); })
+    .then(function (r) { clearTimeout(timer); return r; });
+}

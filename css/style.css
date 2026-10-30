@@ -1290,9 +1290,9 @@ img { max-width: 100%; display: block; }
    Redesign fase 3 — Ontdek je stijl
    ========================================================== */
 .st-hero { background: var(--brand-dark); color: #fff; padding: 36px 0; }
-.st-hero .container { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 40px; }
+.st-hero .container { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
 .st-hero h1 { font-size: 34px; line-height: 1.2; outline: none; }
-.st-capy { display: flex; align-items: center; gap: 14px; max-width: 460px; }
+.st-capy { display: flex; align-items: center; gap: 14px; max-width: 620px; }
 .st-capy img { width: 64px; height: 64px; border-radius: 50%; background: var(--brand-light-soft); flex-shrink: 0; }
 .st-capy p { margin: 0; background: #fff; color: var(--ink); border-radius: 18px; padding: 12px 16px; font-size: 15px; line-height: 1.45; position: relative; }
 .st-capy p::before { content: ''; position: absolute; left: -7px; top: 50%; margin-top: -7px; border: 7px solid transparent; border-left: 0; border-right-color: #fff; }

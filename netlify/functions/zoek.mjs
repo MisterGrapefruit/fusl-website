@@ -12,7 +12,7 @@ const TOOL = {
   input_schema: {
     type: 'object',
     properties: {
-      soorten: { type: 'array', items: { type: 'string', enum: SOORTEN }, description: 'Meubelsoorten. Fauteuil = stoel, dressoir/tv-meubel = kast, boxspring = bed.' },
+      soorten: { type: 'array', items: { type: 'string', enum: SOORTEN }, description: 'Meubelsoorten. Fauteuil = stoel, dressoir/tv-meubel = kast, boxspring = bed. Vage omschrijvingen mogen meerdere soorten geven, bijv. iets om op te zitten = bank en stoel, iets om spullen in op te bergen = kast.' },
       stijlen: { type: 'array', items: { type: 'string', enum: STIJLEN } },
       kleuren: { type: 'array', items: { type: 'string', enum: KLEUREN }, description: 'Rood/oranje/roest = Terracotta, blauw = Donkerblauw, hout/eiken/rotan = Naturel hout, crème/zand = Beige.' },
       min_prijs: { type: ['integer', 'null'] },

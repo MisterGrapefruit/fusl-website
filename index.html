@@ -3,84 +3,115 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FUSL — First Use, Second Life</title>
-<meta name="description" content="FUSL brengt overtollige voorraad van winkels samen op één plek, met persoonlijke begeleiding en korte lijnen tussen aanbieder en afnemer.">
+<title>FUSL – Showroommodellen en laatste exemplaren van woonwinkels</title>
+<meta name="description" content="Nieuwe meubels die een thuis verdienen: showroommodellen en laatste exemplaren van woonwinkels, op jouw stijl gevonden. Je koopt rechtstreeks bij de winkel.">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<nav class="site-nav">
+<nav class="site-nav" aria-label="Hoofdmenu">
   <div class="container">
     <a href="index.html" class="brand">
-      <img src="images/fusl-logo.jpg" alt="FUSL logo">
-      FUSL — First Use, Second Life
+      <img src="images/fusl-logo.jpg" alt="">
+      FUSL
     </a>
     <div class="nav-links">
-      <a href="over-ons.html#hoe-het-werkt">Hoe het werkt</a>
-      <a href="aanbod.html">Aanbod</a>
-      <a href="over-ons.html#voor-winkels">Voor winkels</a>
-      <a href="stijl.html" class="btn btn-accent">Ontdek je stijl</a>
+      <a href="stijl.html">Ontdek je stijl</a>
+      <a href="aanbod.html">Zoeken</a>
+      <a href="aanbod.html#favorieten" class="nav-fav"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Mijn selectie</a>
+      <a href="over-ons.html">Over FUSL</a>
+      <a href="over-ons.html#voor-winkels" class="nav-shops">Voor winkels</a>
     </div>
   </div>
 </nav>
 
-<header class="hero">
+<header class="home-hero">
   <div class="container">
-    <div class="hero-copy">
-      <h1><span data-cms="heroTitleLine1">Nieuw. Onverkocht.</span><br><span data-cms="heroTitleLine2">Verdient een thuis.</span></h1>
-      <p data-cms="heroText">FUSL brengt overtollige voorraad van winkels samen op één plek — met persoonlijke begeleiding en korte lijnen tussen aanbieder en afnemer.</p>
-      <div class="hero-actions">
-        <a href="stijl.html" class="btn btn-rust">Ontdek je stijl</a>
-        <a href="over-ons.html#voor-winkels" class="btn btn-white">Voor winkels</a>
-      </div>
+    <div class="home-hero-copy">
+      <h1 data-cms="heroTitle">Nieuwe meubels die een thuis verdienen</h1>
+      <p data-cms="heroText">FUSL zoekt voor jou in de showroommodellen en laatste exemplaren van woonwinkels. Nieuwe meubels die niet meer in het vaste assortiment zitten, vaak nog maar in één exemplaar. Kies wat bij je past en koop rechtstreeks bij de winkel.</p>
     </div>
-    <div class="hero-mascot">
-      <div class="speech-bubble" data-cms="mascotSpeech">Hoi, ik ben Capy! Ik help je op weg naar de juiste meubels.</div>
-      <img src="images/capy-full.png" alt="Capy, de FUSL-mascotte" class="mascot-img">
+
+    <div class="route-grid">
+      <article class="route-card">
+        <div class="route-media route-media--photos">
+          <img src="images/beige.jpg" alt="">
+          <img src="images/scandinavisch.jpg" alt="">
+          <img src="images/knus.jpg" alt="">
+        </div>
+        <div class="route-body">
+          <h2>Nog op zoek naar je stijl?</h2>
+          <div class="route-capy">
+            <img src="images/capy-face.png" alt="Capy, de FUSL-mascotte">
+            <span><strong>Capy</strong>, je persoonlijke stylist, helpt je op weg.</span>
+          </div>
+          <p>Kies de kamer die je aanspreekt en swipe door een paar meubels. Capy laat je zien welke stijl bij je past.</p>
+          <a href="stijl.html" class="btn btn-rust route-cta">Ontdek je stijl →</a>
+        </div>
+      </article>
+
+      <article class="route-card">
+        <div class="route-media route-media--search" aria-hidden="true">
+          <div class="mock-search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+            Bijv. een Scandinavische bank
+          </div>
+          <div class="mock-chips"><span>Banken</span><span>Eettafels</span><span>Stoelen</span><span>Kasten</span></div>
+        </div>
+        <div class="route-body">
+          <h2>Weet je al wat je zoekt?</h2>
+          <p>Zoek direct in de showroommodellen en laatste exemplaren van alle aangesloten woonwinkels.</p>
+          <ul class="check-list">
+            <li><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg>Op meubelsoort</li>
+            <li><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg>Bij zelfstandige winkels of ketens</li>
+            <li><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg>Bewaar je favorieten in Mijn selectie</li>
+          </ul>
+          <a href="aanbod.html" class="btn btn-green route-cta">Zoek in het aanbod →</a>
+        </div>
+      </article>
     </div>
   </div>
 </header>
 
-<section class="section">
+<section class="section" id="waarom">
   <div class="container">
-    <h2>Zo werkt het</h2>
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num" style="background: var(--brand-accent);">1</div>
-        <h3>Kies je stijl</h3>
-        <p>Capy laat je 6 kamerstijlen zien — klik de kamer die bij je past.</p>
+    <div class="section-intro">
+      <h2>Waarom FUSL</h2>
+      <p>FUSL staat voor <strong>First Use, Second Life</strong>: meubels die in de showroom of het magazijn stonden, krijgen bij jou alsnog hun eerste gebruik.</p>
+    </div>
+    <div class="promise-grid">
+      <div class="promise-card">
+        <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg>
+        <h3>Nieuw en nooit gebruikt</h3>
+        <p>Showroommodellen en stukken uit vorige collecties, met de staat eerlijk beschreven.</p>
       </div>
-      <div class="step-card">
-        <div class="step-num" style="background: var(--rust);">2</div>
-        <h3>Vind passende meubels</h3>
-        <p>We tonen alleen aanbod in jouw stijl, bij winkels bij jou in de buurt.</p>
+      <div class="promise-card">
+        <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M7.5 12l3 3 6-6"/></svg>
+        <h3>Zorgvuldig geselecteerd</h3>
+        <p>Wij doorzoeken de showrooms en magazijnen van woonwinkels; jij kiest wat bij je past.</p>
       </div>
-      <div class="step-card">
-        <div class="step-num" style="background: var(--brand-accent);">3</div>
-        <h3>Neem contact op</h3>
-        <p>Rechtstreeks contact met de winkel — korte lijnen, geen tussenpartij.</p>
+      <div class="promise-card">
+        <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>
+        <h3>Een thuis in plaats van het magazijn</h3>
+        <p>Duurzaam, en voor een eerlijke prijs.</p>
+      </div>
+      <div class="promise-card">
+        <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+        <h3>Jouw selectie</h3>
+        <p>Bewaar de stukken die je mooi vindt en bekijk ze rustig terug. <a href="aanbod.html#favorieten" class="text-link">Mijn selectie →</a></p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="section-stores">
+<section class="section section-tight">
   <div class="container">
-    <h2>Winkels in de FUSL-community</h2>
-    <div class="filter-pills">
-      <button class="pill active" type="button">Alles</button>
-      <button class="pill" type="button">Ketens</button>
-      <button class="pill" type="button">Lokale winkels</button>
-    </div>
-    <div class="store-list">
-      <div class="store-row">
-        <div class="store-name">Woonstijl Verhoeven <span class="badge badge-local">Lokaal</span></div>
-        <div class="store-meta">Zitmeubelen · 24 producten</div>
+    <div class="shop-cta">
+      <div>
+        <h2>Heb je een woonwinkel?</h2>
+        <p>Word onderdeel van FUSL en geef je showroommodellen en laatste exemplaren een thuis bij nieuwe klanten.</p>
       </div>
-      <div class="store-row">
-        <div class="store-name">Interimo <span class="badge badge-chain">Keten</span></div>
-        <div class="store-meta">Kantoormeubilair · 61 producten</div>
-      </div>
+      <a href="over-ons.html#voor-winkels" class="btn btn-white">Meer voor winkels</a>
     </div>
   </div>
 </section>
@@ -88,13 +119,18 @@
 <footer class="site-footer">
   <div class="container">
     <div class="footer-brand">
-      <img src="images/fusl-logo.jpg" alt="FUSL logo">
+      <img src="images/fusl-logo.jpg" alt="">
       <div>
-        <div class="name">FUSL — First Use, Second Life</div>
-        <div class="tagline">Kwaliteit. Duurzaam. Betaalbaar.</div>
+        <div class="name">FUSL</div>
+        <div class="tagline">First Use, Second Life</div>
       </div>
     </div>
-    <div class="footer-note">Duurzaamheid en gemak</div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="stijl.html">Ontdek je stijl</a>
+      <a href="aanbod.html">Zoeken</a>
+      <a href="over-ons.html">Over FUSL</a>
+      <a href="over-ons.html#voor-winkels">Voor winkels</a>
+    </nav>
   </div>
 </footer>
 

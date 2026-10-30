@@ -9,17 +9,18 @@
 </head>
 <body>
 
-<nav class="site-nav">
+<nav class="site-nav" aria-label="Hoofdmenu">
   <div class="container">
     <a href="index.html" class="brand">
-      <img src="images/fusl-logo.jpg" alt="FUSL logo">
-      FUSL — First Use, Second Life
+      <img src="images/fusl-logo.jpg" alt="">
+      FUSL
     </a>
     <div class="nav-links">
-      <a href="over-ons.html#hoe-het-werkt">Hoe het werkt</a>
-      <a href="aanbod.html">Aanbod</a>
-      <a href="over-ons.html#voor-winkels">Voor winkels</a>
-      <a href="stijl.html" class="btn btn-accent">Ontdek je stijl</a>
+      <a href="stijl.html" aria-current="page">Ontdek je stijl</a>
+      <a href="aanbod.html">Zoeken</a>
+      <a href="aanbod.html#favorieten" class="nav-fav"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Mijn selectie</a>
+      <a href="over-ons.html">Over FUSL</a>
+      <a href="over-ons.html#voor-winkels" class="nav-shops">Voor winkels</a>
     </div>
   </div>
 </nav>
@@ -63,30 +64,6 @@
         <img src="images/hip.jpg" alt="Retro woonstijl met terracotta en okergele tinten">
         <span class="style-label">Retro</span>
       </button>
-      <button class="style-card style-card--swatch" type="button" data-style="Japandi" style="background: linear-gradient(135deg, #6b5642 0 25%, #e8e4da 25% 50%, #3a3a38 50% 75%, #b8a88f 75% 100%);">
-        <span class="style-swatch-note">Foto volgt</span>
-        <span class="style-label">Japandi</span>
-      </button>
-      <button class="style-card style-card--swatch" type="button" data-style="Bohemien" style="background: linear-gradient(135deg, #5f7a52 0 25%, #a54a28 25% 50%, #d9a441 50% 75%, #8a7256 75% 100%);">
-        <span class="style-swatch-note">Foto volgt</span>
-        <span class="style-label">Bohemien</span>
-      </button>
-      <button class="style-card style-card--swatch" type="button" data-style="Klassiek" style="background: linear-gradient(135deg, #3a2c20 0 25%, #d9a441 25% 50%, #e8e4da 50% 75%, #6b1f1f 75% 100%);">
-        <span class="style-swatch-note">Foto volgt</span>
-        <span class="style-label">Klassiek</span>
-      </button>
-      <button class="style-card style-card--swatch" type="button" data-style="Kuststijl" style="background: linear-gradient(135deg, #ffffff 0 25%, #a9c4d9 25% 50%, #e3ddc9 50% 75%, #35506b 75% 100%);">
-        <span class="style-swatch-note">Foto volgt</span>
-        <span class="style-label">Kuststijl</span>
-      </button>
-      <button class="style-card style-card--swatch" type="button" data-style="Art Deco" style="background: linear-gradient(135deg, #1f1f1c 0 25%, #c9a44c 25% 50%, #1f4d3d 50% 75%, #6b1f2f 75% 100%);">
-        <span class="style-swatch-note">Foto volgt</span>
-        <span class="style-label">Art Deco</span>
-      </button>
-      <button class="style-card style-card--swatch" type="button" data-style="Maximalistisch" style="background: linear-gradient(135deg, #a54a28 0 25%, #1f4d3d 25% 50%, #d9a441 50% 75%, #35506b 75% 100%);">
-        <span class="style-swatch-note">Foto volgt</span>
-        <span class="style-label">Maximalistisch</span>
-      </button>
 
       <a href="vragenlijst.html" class="style-card style-card--cta" id="ga-verder">
         <span class="style-cta-arrow">→</span>
@@ -102,13 +79,18 @@
 <footer class="site-footer">
   <div class="container">
     <div class="footer-brand">
-      <img src="images/fusl-logo.jpg" alt="FUSL logo">
+      <img src="images/fusl-logo.jpg" alt="">
       <div>
-        <div class="name">FUSL — First Use, Second Life</div>
-        <div class="tagline">Kwaliteit. Duurzaam. Betaalbaar.</div>
+        <div class="name">FUSL</div>
+        <div class="tagline">First Use, Second Life</div>
       </div>
     </div>
-    <div class="footer-note">Duurzaamheid en gemak</div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="stijl.html">Ontdek je stijl</a>
+      <a href="aanbod.html">Zoeken</a>
+      <a href="over-ons.html">Over FUSL</a>
+      <a href="over-ons.html#voor-winkels">Voor winkels</a>
+    </nav>
   </div>
 </footer>
 

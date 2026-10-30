@@ -16,10 +16,8 @@ collections:
         label: "Hero-tekst"
         name: "home_hero"
         fields:
-          - { label: "Titel — regel 1", name: "heroTitleLine1", widget: "string" }
-          - { label: "Titel — regel 2", name: "heroTitleLine2", widget: "string" }
+          - { label: "Titel", name: "heroTitle", widget: "string" }
           - { label: "Tekst onder de titel", name: "heroText", widget: "text" }
-          - { label: "Tekst in Capy's spreekbubbel", name: "mascotSpeech", widget: "string" }
 
   - name: "instellingen"
     label: "Instellingen"
@@ -34,7 +32,7 @@ collections:
     label: "Over ons"
     files:
       - file: "data/over-ons-content.json"
-        label: "Verhaal, doelen & reacties"
+        label: "Verhaal & doelen"
         name: "over_ons_content"
         fields:
           - { label: "Ons verhaal — alinea 1", name: "verhaalIntro1", widget: "text" }
@@ -45,11 +43,3 @@ collections:
           - { label: "Doel 'Gemak' — tekst", name: "doelGemakTekst", widget: "text" }
           - { label: "Doel 'Duurzaamheid' — titel", name: "doelDuurzaamheidTitel", widget: "string" }
           - { label: "Doel 'Duurzaamheid' — tekst", name: "doelDuurzaamheidTekst", widget: "text" }
-          - { label: "Titel van de reactiesectie", name: "testimonialsTitel", widget: "string" }
-          - { label: "Introzin boven de reacties", name: "testimonialsIntro", widget: "text" }
-          - { label: "Reactie 1 — tekst", name: "testimonial1Quote", widget: "text" }
-          - { label: "Reactie 1 — naam/ondertekening", name: "testimonial1Auteur", widget: "string" }
-          - { label: "Reactie 2 — tekst", name: "testimonial2Quote", widget: "text" }
-          - { label: "Reactie 2 — naam/ondertekening", name: "testimonial2Auteur", widget: "string" }
-          - { label: "Reactie 3 — tekst", name: "testimonial3Quote", widget: "text" }
-          - { label: "Reactie 3 — naam/ondertekening", name: "testimonial3Auteur", widget: "string" }

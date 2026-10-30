@@ -21,9 +21,12 @@
     start: 'Hoi, ik ben Capy! Kies hieronder hoe je wilt beginnen, dan help ik je verder.',
     kies: 'Kies één tot drie kamers die je aanspreken. Ik zoek de rest.',
     swipe: 'Naar rechts als je het leuk vindt, naar links als het niet bij je past. Zo leer ik je smaak kennen.',
-    done: 'Jouw smaak is een mix, en daar zoek ik ook naar!'
+    done: 'Jouw smaak is een mix, en daar zoek ik ook naar!',
+    upload: 'Laat me zien wat je mooi vindt. Screenshots van Pinterest zijn perfect!',
+    moodswipe: 'Je moodboard is mijn startpunt. Swipe naar rechts wat je mooi vindt, dan maak ik het scherper.'
   };
-  var HEADINGS = { start: 'Ontdek welke stijl bij jou past', kies: 'Welke kamers spreken je aan?', swipe: 'Verfijn je smaak', done: 'Dit is jouw stijl' };
+  var MOOD_WEIGHT = 2; // voorsprong van het moodboard, gelijk aan twee likes
+  var HEADINGS = { start: 'Ontdek welke stijl bij jou past', kies: 'Welke kamers spreken je aan?', swipe: 'Verfijn je smaak', done: 'Dit is jouw stijl', upload: 'Upload je moodboard' };
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
@@ -37,7 +40,7 @@
     PRODUCTS = live.concat(PRODUCTS.filter(function (p) { return keys.indexOf((p.name + '|' + p.store).toLowerCase()) < 0; }));
   });
 
-  var st = { screen: 'start', picked: [], deck: [], idx: 0, likes: [], nopes: 0, busy: false };
+  var st = { screen: 'start', picked: [], deck: [], idx: 0, likes: [], nopes: 0, busy: false, mood: null };
 
   // ---------- Schermen ----------
   function show(screen, focusHeading) {
@@ -45,15 +48,17 @@
     var section = screen === 'done' ? 'swipe' : screen;
     document.querySelectorAll('[data-screen]').forEach(function (el) { el.hidden = el.getAttribute('data-screen') !== section; });
     $('st-heading').textContent = HEADINGS[screen];
-    $('st-bubble').textContent = BUBBLES[screen];
+    $('st-bubble').textContent = (screen === 'swipe' && st.mood) ? BUBBLES.moodswipe : BUBBLES[screen];
     if (focusHeading) { $('st-heading').focus({ preventScroll: true }); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   }
 
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-go]');
     if (!b) return;
-    show(b.getAttribute('data-go'), true);
-    if (b.getAttribute('data-go') === 'kies') renderRooms();
+    var go = b.getAttribute('data-go');
+    if (go === 'kies') st.mood = null;
+    show(go, true);
+    if (go === 'kies') renderRooms();
   });
 
   // ---------- Kamers ----------
@@ -88,7 +93,9 @@
   // Afwisselend een meubel uit je gekozen stijlen en een ander meubel, zodat
   // je smaak ook buiten je eerste keuze kan blijken. Elke soort meubel komt
   // zo veel mogelijk aan bod.
-  function buildDeck(styles) {
+  function buildDeck(styles, colors) {
+    colors = colors || [];
+    var fits = function (p) { return styles.indexOf(p.style) >= 0 || colors.indexOf(p.color) >= 0; };
     var shuffled = PRODUCTS.slice().sort(function () { return Math.random() - 0.5; });
     var seen = {};
     var byCatFirst = function (list) {
@@ -96,9 +103,10 @@
       list.forEach(function (p) { (seen[p.category] ? b : a).push(p); seen[p.category] = true; });
       return a.concat(b);
     };
-    var match = byCatFirst(shuffled.filter(function (p) { return styles.indexOf(p.style) >= 0; }));
+    var match = byCatFirst(shuffled.filter(function (p) { return styles.indexOf(p.style) >= 0; })
+      .concat(shuffled.filter(function (p) { return styles.indexOf(p.style) < 0 && colors.indexOf(p.color) >= 0; })));
     seen = {};
-    var rest = byCatFirst(shuffled.filter(function (p) { return styles.indexOf(p.style) < 0; }));
+    var rest = byCatFirst(shuffled.filter(function (p) { return !fits(p); }));
     var deck = [];
     while (deck.length < DECK_SIZE && (match.length || rest.length)) {
       if (match.length) deck.push(match.shift());
@@ -108,9 +116,14 @@
   }
 
   function startSwipe() {
-    st.deck = buildDeck(st.picked);
+    st.deck = st.mood
+      ? buildDeck(st.mood.stijlen.map(function (m) { return m.name; }), st.mood.kleuren)
+      : buildDeck(st.picked);
     st.idx = 0; st.likes = []; st.nopes = 0;
     show('swipe', true);
+    renderMoodIntro();
+    $('st-swipe-back').textContent = st.mood ? '← Terug naar je moodboard' : '← Pas je kamers aan';
+    $('st-rooms-label').textContent = st.mood ? 'Startpunt: je moodboard' : 'Gekozen kamers';
     $('st-swiping').hidden = false;
     $('st-result').hidden = true;
     document.querySelector('.st-swipe-layout').classList.remove('done');
@@ -201,8 +214,9 @@
   // ---------- Stijlmix ----------
   function computeMix() {
     var src = {};
+    if (st.mood) st.mood.stijlen.forEach(function (m) { src[m.name] = MOOD_WEIGHT * m.pct / 100; });
     if (st.likes.length) st.likes.forEach(function (p) { if (p.style) src[p.style] = (src[p.style] || 0) + 1; });
-    else st.picked.forEach(function (n) { src[n] = 1; });
+    else if (!st.mood) st.picked.forEach(function (n) { src[n] = 1; });
     var total = Object.keys(src).reduce(function (s, k) { return s + src[k]; }, 0) || 1;
     var arr = Object.keys(src).map(function (k) { return { name: k, n: src[k] }; })
       .sort(function (a, b) { return b.n - a.n || (st.picked.indexOf(b.name) >= 0) - (st.picked.indexOf(a.name) >= 0); })
@@ -236,12 +250,15 @@
 
   function topColors() {
     var t = {};
+    if (st.mood) st.mood.kleuren.forEach(function (c) { t[c] = 1; });
     st.likes.forEach(function (p) { if (p.color) t[p.color] = (t[p.color] || 0) + 1; });
     return Object.keys(t).sort(function (a, b) { return t[b] - t[a]; }).slice(0, 3);
   }
 
   function renderSide() {
-    $('st-side-rooms').innerHTML = st.picked.map(function (n) {
+    $('st-side-rooms').innerHTML = st.mood
+      ? st.mood.thumbs.slice(0, 4).map(function (src) { return '<img class="st-side-thumb" src="' + src + '" alt="">'; }).join('')
+      : st.picked.map(function (n) {
       return '<span class="st-chip"><img src="images/' + ROOM_IMG[n] + '" alt="">' + esc(n) + '</span>';
     }).join('');
     $('st-side-count').innerHTML = '<strong>' + st.likes.length + '</strong> leuk · <strong>' + st.nopes + '</strong> niet mijn stijl';
@@ -265,7 +282,10 @@
     $('st-skip').hidden = true;
     show('done', false);
     $('st-mix-title').textContent = mixWords(mix);
-    $('st-result-intro').textContent = st.likes.length
+    $('st-mood-intro').hidden = true;
+    $('st-result-intro').textContent = st.mood
+      ? 'Je moodboard was het startpunt; je ' + st.likes.length + ' likes uit ' + st.deck.length + ' meubels hebben het verfijnd.'
+      : st.likes.length
       ? 'Je vond ' + st.likes.length + ' van de ' + st.deck.length + ' meubels mooi. Hiermee zoekt Capy het aanbod voor je door.'
       : 'Je vond geen van deze meubels echt jouw stijl. Capy gaat uit van de kamers die je koos; swipe gerust opnieuw voor andere meubels.';
     $('st-result-mix').innerHTML = mixHtml(mix);
@@ -278,6 +298,104 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   $('st-restart').addEventListener('click', startSwipe);
+
+  // ---------- Moodboard ----------
+  var files = []; // { thumb: dataURL klein, data: dataURL voor analyse }
+
+  function renderMoodIntro() {
+    var box = $('st-mood-intro');
+    box.hidden = !st.mood;
+    if (!st.mood) return;
+    $('st-mood-thumbs').innerHTML = st.mood.thumbs.slice(0, 4).map(function (src) { return '<img src="' + src + '" alt="">'; }).join('');
+    var names = st.mood.stijlen.map(function (m) { return low(m.name); });
+    var mat = st.mood.materialen.length ? ', met ' + st.mood.materialen.join(', ').replace(/, ([^,]*)$/, ' en $1') : '';
+    $('st-mood-text').innerHTML = 'Capy ziet <strong>' + esc(names.slice(0, 2).join(' en ')) + '</strong> in je moodboard' + esc(mat) + '. ' +
+      esc(st.mood.zin || '') + ' Laten we kijken welke meubels je mooi vindt.';
+  }
+  $('st-swipe-back').addEventListener('click', function () {
+    if (st.mood) { show('upload', true); renderBoard(); } else { show('kies', true); renderRooms(); }
+  });
+  $('st-mood-wrong').addEventListener('click', function () { st.mood = null; st.picked = []; show('kies', true); renderRooms(); });
+
+  function uploadError(msg) { var el = $('st-upload-error'); el.hidden = !msg; el.textContent = msg || ''; }
+
+  function renderBoard() {
+    $('st-board').hidden = !files.length;
+    $('st-drop').classList.toggle('small', files.length > 0);
+    $('st-board-count').textContent = files.length + (files.length === 1 ? ' afbeelding' : ' afbeeldingen') + (files.length < 3 ? ' · 3 of meer werkt het best' : '');
+    $('st-thumbs').innerHTML = files.map(function (f, i) {
+      return '<div class="st-thumb"><img src="' + f.thumb + '" alt="Moodboard-afbeelding ' + (i + 1) + '">' +
+        '<button type="button" data-remove="' + i + '" aria-label="Verwijder afbeelding ' + (i + 1) + '">×</button></div>';
+    }).join('') + (files.length < 10 ? '<label for="st-files" class="st-thumb st-add">+ Meer toevoegen</label>' : '');
+  }
+
+  // Verkleint een afbeelding in de browser tot maximaal `max` pixels.
+  function shrink(file, max, quality) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        var scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+        var c = document.createElement('canvas');
+        c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        resolve(c.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('onleesbaar')); };
+      img.src = url;
+    });
+  }
+
+  function addFiles(list) {
+    uploadError('');
+    var arr = Array.prototype.slice.call(list).filter(function (f) { return /^image\//.test(f.type); });
+    var skipped = list.length - arr.length;
+    arr = arr.slice(0, Math.max(0, 10 - files.length));
+    Promise.all(arr.map(function (f) {
+      return Promise.all([shrink(f, 1024, 0.8), shrink(f, 240, 0.7)])
+        .then(function (r) { return { data: r[0], thumb: r[1] }; })
+        .catch(function () { skipped++; return null; });
+    })).then(function (res) {
+      res.filter(Boolean).forEach(function (f) { files.push(f); });
+      if (skipped) uploadError(skipped === 1 ? 'Eén bestand kon niet gelezen worden. Gebruik JPG, PNG of een screenshot.' : skipped + ' bestanden konden niet gelezen worden. Gebruik JPG, PNG of screenshots.');
+      renderBoard();
+    });
+  }
+  $('st-files').addEventListener('change', function (e) { addFiles(e.target.files); e.target.value = ''; });
+  var drop = $('st-drop');
+  ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+  ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+  drop.addEventListener('drop', function (e) { if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files); });
+  $('st-thumbs').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-remove]');
+    if (!b) return;
+    files.splice(+b.getAttribute('data-remove'), 1);
+    renderBoard();
+  });
+
+  $('st-analyse').addEventListener('click', function () {
+    if (!files.length) return;
+    uploadError('');
+    $('st-board').hidden = true; $('st-drop').hidden = true; $('st-analysing').hidden = false;
+    $('st-bubble').textContent = 'Even kijken…';
+    fetch('/api/moodboard', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ afbeeldingen: files.map(function (f) { return f.data; }) }) })
+      .then(function (res) { return res.json().catch(function () { return {}; }).then(function (d) { if (!res.ok) throw new Error(d.fout || 'Capy kan je moodboard nu even niet bekijken.'); return d; }); })
+      .then(function (d) {
+        st.mood = { stijlen: d.stijlen, kleuren: d.kleuren || [], materialen: d.materialen || [], zin: d.zin || '', thumbs: files.map(function (f) { return f.thumb; }) };
+        st.picked = [];
+        startSwipe();
+      })
+      .catch(function (err) { uploadError(err.message); $('st-bubble').textContent = BUBBLES.upload; })
+      .then(function () { $('st-analysing').hidden = true; $('st-drop').hidden = false; renderBoard(); });
+  });
+
+  // Moodboard-route alleen aanbieden als de AI is ingesteld.
+  if (typeof fetch === 'function' && /^https?:/.test(location.protocol)) {
+    fetch('/api/moodboard').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (d && d.beschikbaar) { $('st-mood-soon').hidden = true; $('st-mood-go').hidden = false; document.querySelector('.st-route--soon').classList.remove('st-route--soon'); }
+    }).catch(function () {});
+  }
 
   // Direct naar de kamers via stijl.html#kamers (bijv. vanaf de homepage)
   if (location.hash === '#kamers') { show('kies', false); renderRooms(); }

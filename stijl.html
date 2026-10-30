@@ -67,11 +67,12 @@
           <span class="st-time"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>3 tot 10 afbeeldingen, daarna 8 kaartjes · ongeveer 1 minuut</span>
           <span class="st-grow"></span>
           <span class="st-soon" id="st-mood-soon">Binnenkort beschikbaar</span>
+          <button type="button" class="btn btn-green st-route-cta" data-go="upload" id="st-mood-go" hidden>Upload je moodboard</button>
         </div>
       </article>
     </div>
     <div class="st-start-foot">
-      <span>Capy onthoudt je stijl in deze browser, zodat je hem bij het zoeken kunt gebruiken.</span>
+      <span>Na je moodboard laat Capy je nog 8 meubels zien om je stijl te verfijnen. Capy onthoudt je stijl in deze browser, zodat je hem bij het zoeken kunt gebruiken.</span>
       <a href="aanbod.html" class="text-link">Liever direct zoeken? →</a>
     </div>
   </section>
@@ -117,11 +118,40 @@
     </div>
   </section>
 
+  <!-- Moodboard uploaden -->
+  <section id="st-upload" data-screen="upload" hidden>
+    <button type="button" class="st-back" data-go="start">← Terug</button>
+    <div class="st-upload">
+      <label class="st-drop" id="st-drop" for="st-files">
+        <svg aria-hidden="true" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+        <strong>Sleep je afbeeldingen hierheen</strong>
+        <span>of <u>kies ze op je apparaat</u></span>
+        <span class="st-muted">3 tot 10 afbeeldingen · JPG, PNG of screenshots</span>
+        <span class="st-muted">Tip: open je Pinterest-bord en maak een paar screenshots van de pins die je het mooist vindt.</span>
+      </label>
+      <input type="file" id="st-files" accept="image/jpeg,image/png,image/webp" multiple class="visually-hidden">
+      <div class="st-board" id="st-board" hidden>
+        <div class="st-board-head"><h2>Jouw moodboard</h2><span id="st-board-count"></span></div>
+        <div class="st-thumbs" id="st-thumbs"></div>
+        <button type="button" class="btn btn-rust" id="st-analyse">Herken mijn stijl</button>
+      </div>
+      <div class="st-analysing" id="st-analysing" hidden role="status"><span class="st-spinner" aria-hidden="true"></span>Capy bekijkt je moodboard…</div>
+      <p class="sl-error" id="st-upload-error" role="alert" hidden></p>
+      <p class="sl-privacy"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>We gebruiken je afbeeldingen alleen om je stijl te herkennen en bewaren ze niet.</p>
+    </div>
+    <p class="st-start-foot"><button type="button" class="st-link" data-go="kies">Liever zelf kamers kiezen?</button></p>
+  </section>
+
   <!-- Swipen -->
   <section id="st-swipe" data-screen="swipe" hidden>
     <div class="st-swipe-top">
-      <button type="button" class="st-back" data-go="kies">← Pas je kamers aan</button>
+      <button type="button" class="st-back" id="st-swipe-back">← Pas je kamers aan</button>
       <a href="aanbod.html?van=stijl" class="text-link" id="st-skip">Sla over en bekijk het aanbod →</a>
+    </div>
+    <div class="st-mood-intro" id="st-mood-intro" hidden>
+      <div class="st-mood-thumbs" id="st-mood-thumbs"></div>
+      <span id="st-mood-text"></span>
+      <button type="button" class="st-link" id="st-mood-wrong">Klopt niet? Kies zelf kamers</button>
     </div>
     <div class="st-swipe-layout">
       <div class="st-swipe-col">
@@ -166,7 +196,7 @@
 
       <aside class="st-side" aria-label="Jouw stijl vormt zich">
         <span class="st-side-title">Jouw stijl vormt zich</span>
-        <span class="st-side-label">Gekozen kamers</span>
+        <span class="st-side-label" id="st-rooms-label">Gekozen kamers</span>
         <div class="st-side-rooms" id="st-side-rooms"></div>
         <span class="st-side-count" id="st-side-count"><strong>0</strong> leuk · <strong>0</strong> niet mijn stijl</span>
         <span class="st-side-label">Stijlmix tot nu toe</span>

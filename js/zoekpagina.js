@@ -91,8 +91,24 @@
   function resetKm() { kmCache = {}; }
 
   // ---------- Zoeken ----------
+  var runSeq = 0;
   function run(text) {
-    var parsed = fuslParseQuery(text);
+    var seq = ++runSeq;
+    var btn = document.querySelector('.zk-submit');
+    if (text.trim()) {
+      btn.disabled = true; btn.textContent = 'Capy zoekt…';
+      document.getElementById('zk-note').hidden = false;
+      document.getElementById('zk-note-text').textContent = 'Capy leest je zoekopdracht…';
+    }
+    var done = function (r) {
+      btn.disabled = false; btn.textContent = 'Zoeken';
+      if (seq === runSeq) apply(text, r.parsed);
+    };
+    if (!text.trim()) { done({ parsed: {} }); return; }
+    fuslSmartParse(text).then(done);
+  }
+
+  function apply(text, parsed) {
     var f = Object.assign({}, state.f);
     var keys = [];
     ['cats', 'colors', 'styles', 'shop'].forEach(function (k) { if (parsed[k] !== undefined) { f[k] = parsed[k]; keys.push(k); } });

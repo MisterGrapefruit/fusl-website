@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aanbod — FUSL</title>
-<meta name="description" content="Blader door meubels van aangesloten winkels — showroommodellen en producten in de verkoop.">
+<title>Zoek in het aanbod – FUSL</title>
+<meta name="description" content="Zoek in showroommodellen en laatste exemplaren van woonwinkels. Beschrijf wat je zoekt en filter op soort, stijl, kleur, prijs en afstand.">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -25,63 +25,83 @@
   </div>
 </nav>
 
-<header class="aanbod-hero">
+<header class="zk-hero">
   <div class="container">
-    <h1 class="visually-hidden">Aanbod — zoek je meubel</h1>
-    <div class="aanbod-hero-inner">
-      <div class="aanbod-search-box">
-        <input type="text" class="aanbod-search-input" id="search-input" placeholder="Bijv. een Scandinavische bank…" autocomplete="off">
-        <div class="aanbod-search-box-footer">
-          <span class="aanbod-search-box-icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </span>
-          <button type="button" class="aanbod-search-submit" id="search-submit" aria-label="Zoeken" disabled>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 19V5M5 12l7-7 7 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
+    <h1>Zoek in het aanbod</h1>
+    <p>Zoek in showroommodellen en laatste exemplaren van alle aangesloten woonwinkels. Beschrijf in je eigen woorden wat je zoekt; Capy zet de filters voor je goed.</p>
+    <form class="zk-form" id="zk-form" role="search">
+      <label for="zk-input" class="visually-hidden">Wat zoek je?</label>
+      <div class="zk-input-wrap">
+        <img src="images/capy-face.png" alt="" class="zk-input-capy">
+        <input id="zk-input" type="search" placeholder="Bijv. een rode bank tussen 400 en 600 euro" autocomplete="off">
       </div>
-      <div class="aanbod-hero-mascot">
-        <div class="speech-bubble aanbod-speech-bubble" id="aanbod-capy-line">Vertel me wat voor meubel je zoekt, dan zoek ik de beste aanbiedingen voor je!</div>
-        <img src="images/capy-full.png" alt="Capy, de FUSL-mascotte" class="mascot-img">
-      </div>
-    </div>
-    <div class="profile-banner" id="profile-banner" style="display: none;">
-      <span id="profile-banner-text"></span>
-      <div class="profile-banner-actions">
-        <a href="vragenlijst.html">Wijzig je voorkeuren</a>
-        <button type="button" class="link-btn" id="reset-profile-btn">Voorkeuren wissen</button>
-      </div>
+      <button type="submit" class="zk-submit">Zoeken</button>
+    </form>
+    <div class="zk-examples">
+      <span>Probeer:</span>
+      <button type="button" data-example>Rode bank tussen 400 en 600 euro</button>
+      <button type="button" data-example>Houten eettafel onder de 500 euro</button>
+      <button type="button" data-example>Scandinavische stoel van een zelfstandige winkel</button>
     </div>
   </div>
 </header>
 
-<div class="filter-bar" id="filter-bar" hidden>
+<div class="zk-filterbar" id="zk-filterbar">
   <div class="container">
-    <div class="filter-group" id="category-filters">
-      <button class="pill active" data-category="alles" type="button">Alles</button>
-      <button class="pill" data-category="bank" type="button">Bank</button>
-      <button class="pill" data-category="eettafel" type="button">Eettafel</button>
-      <button class="pill" data-category="kast" type="button">Kast</button>
-      <button class="pill" data-category="stoel" type="button">Stoel</button>
-      <button class="pill" data-category="bed" type="button">Bed</button>
+    <div class="zk-filters" role="group" aria-label="Filters">
+      <button type="button" class="zk-mix" id="zk-mix" role="switch" aria-checked="false" hidden>
+        <span class="zk-switch" aria-hidden="true"><span></span></span>
+        <span>Jouw stijl: <span id="zk-mix-title"></span></span>
+      </button>
+      <span class="zk-sep" id="zk-mix-sep" aria-hidden="true" hidden></span>
+      <div class="zk-filter-list" id="zk-filter-list"></div>
+      <button type="button" class="zk-clear-all" id="zk-clear-all" hidden>Wis alle filters</button>
     </div>
-    <div class="filter-group" id="type-filters">
-      <button class="pill active" data-type="alles" type="button">Alles</button>
-      <button class="pill" data-type="keten" type="button">Ketens</button>
-      <button class="pill" data-type="lokaal" type="button">Lokale winkels</button>
-    </div>
-    <div class="filter-group" id="deal-filters">
-      <button class="pill" data-deal="korting" type="button">🏷️ Op korting</button>
-    </div>
-    <div class="filter-group" id="fav-filters">
-      <button class="pill" data-fav="favorieten" type="button">❤️ Favorieten</button>
-    </div>
+    <p class="zk-note" id="zk-note" hidden>
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
+      <span id="zk-note-text"></span>
+    </p>
   </div>
 </div>
 
-<div class="container">
-  <div class="product-grid" id="product-grid"></div>
-</div>
+<main class="container zk-main">
+  <div class="zk-notice" id="zk-nounderstand" hidden>Capy herkende geen meubelsoort, kleur, prijs of stijl in je zoekopdracht. Probeer bijvoorbeeld "houten eettafel onder de 500 euro", of kies hierboven zelf een filter.</div>
+
+  <div class="zk-noexact" id="zk-noexact" role="status" hidden>
+    <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>
+    <div>
+      <strong>Sorry, er is geen stuk dat aan al je voorwaarden voldoet.</strong>
+      <span id="zk-noexact-wanted"></span>
+      <span>Hieronder een paar alternatieven die er het dichtst bij komen. Bij elk stuk staat wat afwijkt.</span>
+      <span class="zk-noexact-actions">Pas een filter aan of <button type="button" class="zk-link-btn" data-clear-all>wis alle filters</button>.</span>
+    </div>
+  </div>
+
+  <div class="zk-head">
+    <h2 id="zk-title">Alle stukken</h2>
+    <span class="zk-sort">
+      <label for="zk-sort">Sorteer op</label>
+      <select id="zk-sort">
+        <option value="relevantie">Relevantie</option>
+        <option value="prijs-op">Prijs: laag naar hoog</option>
+        <option value="prijs-af">Prijs: hoog naar laag</option>
+        <option value="nieuw">Nieuw binnen</option>
+        <option value="afstand" hidden>Afstand</option>
+      </select>
+    </span>
+  </div>
+
+  <div class="zk-selection-head" id="zk-selection-head" hidden>
+    <button type="button" class="text-link" id="zk-back">← Terug naar alle stukken</button>
+  </div>
+
+  <div class="zk-grid" id="zk-grid" aria-live="polite"></div>
+
+  <div class="zk-savedbar" id="zk-savedbar" hidden>
+    <span><strong id="zk-saved-count">0</strong> in je selectie</span>
+    <a href="aanbod.html#favorieten">Bekijk mijn selectie →</a>
+  </div>
+</main>
 
 <footer class="site-footer">
   <div class="container">
@@ -104,286 +124,9 @@
 <script src="js/profile.js"></script>
 <script src="js/favorites.js"></script>
 <script src="js/aanbod-data.js"></script>
+<script src="js/zoek.js"></script>
 <script src="js/analytics.js"></script>
-<script>
-  var colorHex = {};
-  FUSL_COLORS.forEach(function (c) { colorHex[c.name] = c.hex; });
-
-  var state = { search: '', category: 'alles', type: 'alles', deal: 'alles', favoritesOnly: false };
-  var profile = fuslGetProfile();
-  var PRODUCTS = SAMPLE_PRODUCTS; // wordt aangevuld/vervangen zodra live winkelaanbod geladen is
-
-  // Als er iets getypt is, tonen we filters/resultaten — daarvoor houden we
-  // de pagina bewust rustig (alleen Capy + zoekbalk). Heb je op de stijlpagina
-  // (of via de swipe-vragenlijst) al voorkeuren vastgelegd, dan slaan we die
-  // kale, "algemene" zoekpagina over: dan tonen we meteen een gefilterd/
-  // gesorteerd aanbod, een stap verder dan de generieke lege pagina.
-  function hasSearch() {
-    return state.search.trim().length > 0;
-  }
-
-  function hasProfile() {
-    var hasStyles = profile.roomStyles && profile.roomStyles.length > 0;
-    var hasColors = profile.colors && Object.keys(profile.colors).length > 0;
-    return hasStyles || hasColors;
-  }
-
-  function shouldReveal() {
-    return hasSearch() || hasProfile() || state.favoritesOnly;
-  }
-
-  function updateCapyLine() {
-    var line = document.getElementById('aanbod-capy-line');
-    if (!line) return;
-    line.textContent = hasProfile()
-      ? 'Welkom terug! Ik heb je aanbod alvast afgestemd op jouw stijl — typ iets om nog specifieker te zoeken.'
-      : 'Vertel me wat voor meubel je zoekt, dan zoek ik de beste aanbiedingen voor je!';
-  }
-
-  function updateProfileBanner() {
-    var banner = document.getElementById('profile-banner');
-    if (!shouldReveal() || !hasProfile()) {
-      banner.style.display = 'none';
-      return;
-    }
-    var text = document.getElementById('profile-banner-text');
-    var parts = [];
-    if (profile.roomStyles && profile.roomStyles.length) parts.push((profile.roomStyles.length > 1 ? 'stijlen ' : 'stijl ') + profile.roomStyles.join(', '));
-    if (profile.colors && Object.keys(profile.colors).length) parts.push(Object.keys(profile.colors).length + ' kleurvoorkeur(en)');
-    text.textContent = 'Gefilterd op basis van jouw profiel: ' + parts.join(', ') + '.';
-    banner.style.display = 'flex';
-  }
-
-  function matchesProfile(product) {
-    if (profile.roomStyles && profile.roomStyles.indexOf(product.style) !== -1) return true;
-    if (profile.colors) {
-      var wanted = profile.colors[product.category];
-      if (wanted && wanted === product.color) return true;
-    }
-    return false;
-  }
-
-  function render() {
-    var grid = document.getElementById('product-grid');
-    var filterBar = document.getElementById('filter-bar');
-
-    updateProfileBanner();
-    updateCapyLine();
-
-    if (!shouldReveal()) {
-      filterBar.hidden = true;
-      grid.innerHTML = '';
-      return;
-    }
-    filterBar.hidden = false;
-    grid.innerHTML = '';
-
-    var filtered = PRODUCTS.filter(function (p) {
-      if (state.category !== 'alles' && p.category !== state.category) return false;
-      if (state.type !== 'alles' && p.type !== state.type) return false;
-      if (state.deal === 'korting' && !p.salePrice) return false;
-      if (state.favoritesOnly && !fuslIsFavorite(p.id)) return false;
-      if (state.search) {
-        var q = state.search.toLowerCase();
-        var haystack = [p.name, p.store, p.category, p.style || '', p.color || ''].join(' ').toLowerCase();
-        if (haystack.indexOf(q) === -1) return false;
-      }
-      return true;
-    });
-
-    if ((profile.roomStyles && profile.roomStyles.length) || (profile.colors && Object.keys(profile.colors).length)) {
-      filtered.sort(function (a, b) {
-        return (matchesProfile(b) ? 1 : 0) - (matchesProfile(a) ? 1 : 0);
-      });
-    }
-
-    if (filtered.length === 0) {
-      var empty = document.createElement('div');
-      empty.className = 'empty-state';
-      empty.textContent = 'Geen meubels gevonden binnen deze filters.';
-      grid.appendChild(empty);
-      return;
-    }
-
-    filtered.forEach(function (p) {
-      var card = document.createElement('div');
-      card.className = 'product-card';
-
-      var swatch = document.createElement('div');
-      swatch.className = 'product-swatch';
-      swatch.style.background = colorHex[p.color] || '#ccc';
-
-      var statusEl = document.createElement('span');
-      statusEl.className = 'product-status';
-      statusEl.textContent = p.status;
-      swatch.appendChild(statusEl);
-
-      if (matchesProfile(p)) {
-        var matchEl = document.createElement('span');
-        matchEl.className = 'match-badge';
-        matchEl.textContent = 'Past bij jouw stijl';
-        swatch.appendChild(matchEl);
-      }
-
-      if (p.salePrice) {
-        var dealEl = document.createElement('span');
-        dealEl.className = 'deal-badge';
-        var pct = Math.round((1 - p.salePrice / p.price) * 100);
-        dealEl.textContent = '🏷️ -' + pct + '%';
-        swatch.appendChild(dealEl);
-      }
-
-      var labelEl = document.createElement('span');
-      labelEl.className = 'placeholder-label';
-      labelEl.textContent = p.color;
-      swatch.appendChild(labelEl);
-
-      var favBtn = document.createElement('button');
-      favBtn.type = 'button';
-      favBtn.className = 'fav-btn' + (fuslIsFavorite(p.id) ? ' active' : '');
-      favBtn.setAttribute('data-fav-id', p.id);
-      favBtn.setAttribute('aria-label', 'Bewaar als favoriet');
-      favBtn.textContent = fuslIsFavorite(p.id) ? '♥' : '♡';
-      swatch.appendChild(favBtn);
-
-      var priceHtml = p.salePrice
-        ? '<span class="product-price-old">€ ' + p.price + '</span> <span class="product-price product-price-sale">€ ' + p.salePrice + '</span>'
-        : '<span class="product-price">€ ' + p.price + '</span>';
-
-      var body = document.createElement('div');
-      body.className = 'product-body';
-      body.innerHTML =
-        '<div class="product-name">' + p.name + '</div>' +
-        '<div class="product-store">' + p.store + ' <span class="badge ' + (p.type === 'lokaal' ? 'badge-local' : 'badge-chain') + '">' + (p.type === 'lokaal' ? 'Lokaal' : 'Keten') + '</span></div>' +
-        '<div class="product-style-tag">' + (p.style || '') + '</div>' +
-        '<div class="product-price-row">' + priceHtml + '</div>';
-
-      if (p.productUrl) {
-        var storeLink = document.createElement('a');
-        storeLink.className = 'btn-store-link';
-        // UTM-parameters zodat de winkel zelf ook ziet dat dit bezoek van FUSL
-        // komt, plus (met toestemming) een eigen "winkel_klik"-event in GA4 —
-        // FUSL's eigen, onafhankelijke telling van doorverwezen bezoekers.
-        storeLink.href = typeof fuslWithUtm === 'function' ? fuslWithUtm(p.productUrl, { content: p.category }) : p.productUrl;
-        storeLink.target = '_blank';
-        storeLink.rel = 'noopener sponsored';
-        storeLink.textContent = 'Bekijk bij ' + p.store + ' →';
-        storeLink.addEventListener('click', function () {
-          if (typeof fuslTrackStoreClick === 'function') {
-            fuslTrackStoreClick({ winkelNaam: p.store, winkelType: p.type, categorie: p.category, productNaam: p.name });
-          }
-        });
-        body.appendChild(storeLink);
-      }
-
-      card.appendChild(swatch);
-      card.appendChild(body);
-      grid.appendChild(card);
-    });
-  }
-
-  var searchInput = document.getElementById('search-input');
-  var searchSubmit = document.getElementById('search-submit');
-
-  function updateSearchSubmit() {
-    searchSubmit.disabled = !hasSearch();
-  }
-
-  function goToResults() {
-    if (!shouldReveal()) { searchInput.focus(); return; }
-    searchInput.blur();
-    var bar = document.getElementById('filter-bar');
-    if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  searchInput.addEventListener('input', function (e) {
-    state.search = e.target.value;
-    updateSearchSubmit();
-    render();
-  });
-
-  searchInput.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') goToResults();
-  });
-
-  searchSubmit.addEventListener('click', goToResults);
-
-  document.getElementById('category-filters').addEventListener('click', function (e) {
-    if (!e.target.matches('.pill')) return;
-    state.category = e.target.getAttribute('data-category');
-    this.querySelectorAll('.pill').forEach(function (p) { p.classList.remove('active'); });
-    e.target.classList.add('active');
-    render();
-  });
-
-  document.getElementById('type-filters').addEventListener('click', function (e) {
-    if (!e.target.matches('.pill')) return;
-    state.type = e.target.getAttribute('data-type');
-    this.querySelectorAll('.pill').forEach(function (p) { p.classList.remove('active'); });
-    e.target.classList.add('active');
-    render();
-  });
-
-  document.getElementById('deal-filters').addEventListener('click', function (e) {
-    if (!e.target.matches('.pill')) return;
-    var deal = e.target.getAttribute('data-deal');
-    state.deal = e.target.classList.contains('active') ? 'alles' : deal;
-    this.querySelectorAll('.pill').forEach(function (p) { p.classList.remove('active'); });
-    if (state.deal !== 'alles') e.target.classList.add('active');
-    render();
-  });
-
-  document.getElementById('reset-profile-btn').addEventListener('click', function () {
-    profile = fuslResetProfile();
-    state = { search: '', category: 'alles', type: 'alles', deal: 'alles', favoritesOnly: false };
-    searchInput.value = '';
-    updateSearchSubmit();
-    // Zet ook de filterpillen visueel terug op "Alles".
-    document.querySelectorAll('#category-filters .pill, #type-filters .pill, #deal-filters .pill, #fav-filters .pill').forEach(function (p) {
-      p.classList.remove('active');
-    });
-    document.querySelector('#category-filters .pill[data-category="alles"]').classList.add('active');
-    document.querySelector('#type-filters .pill[data-type="alles"]').classList.add('active');
-    render();
-    searchInput.focus();
-  });
-
-  document.getElementById('fav-filters').addEventListener('click', function (e) {
-    if (!e.target.matches('.pill')) return;
-    state.favoritesOnly = !e.target.classList.contains('active');
-    e.target.classList.toggle('active', state.favoritesOnly);
-    render();
-  });
-
-  document.getElementById('product-grid').addEventListener('click', function (e) {
-    if (!e.target.matches('.fav-btn')) return;
-    var id = e.target.getAttribute('data-fav-id');
-    fuslToggleFavorite(id);
-    var nowFavorite = fuslIsFavorite(id);
-    e.target.classList.toggle('active', nowFavorite);
-    e.target.textContent = nowFavorite ? '♥' : '♡';
-    if (state.favoritesOnly) render();
-  });
-
-  // "Mijn selectie" in het menu: open direct je favorieten
-  function applyHash() {
-    if (location.hash !== '#favorieten') return;
-    state.favoritesOnly = true;
-    var favPill = document.querySelector('#fav-filters .pill');
-    if (favPill) favPill.classList.add('active');
-  }
-  applyHash();
-  window.addEventListener('hashchange', function () { applyHash(); render(); });
-
-  render();
-
-  // Live winkelaanbod (via tools/sync-feed.js -> data/aanbod.json) erbij laden
-  // zodra dat beschikbaar is; voorbeelddata blijft anders gewoon staan.
-  fuslLoadLiveListings(function (liveListings) {
-    PRODUCTS = liveListings.concat(SAMPLE_PRODUCTS);
-    render();
-  });
-</script>
+<script src="js/zoekpagina.js"></script>
 
 </body>
 </html>

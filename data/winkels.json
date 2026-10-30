@@ -1,0 +1,11 @@
+{
+  "_uitleg": "Winkels en hun vestigingen, gebruikt voor de afstandsfilter op de zoekpagina. Een keten kan meerdere vestigingen hebben; FUSL rekent dan met de dichtstbijzijnde. lat/lng = coördinaten van het winkeladres (bijv. op te zoeken via pdok.nl). De winkels hieronder zijn voorbeelden en worden vervangen door de pilotwinkels.",
+  "winkels": [
+    { "id": "woonstijl-verhoeven", "naam": "Woonstijl Verhoeven", "type": "lokaal", "voorbeeld": true, "vestigingen": [ { "plaats": "Amersfoort", "lat": 52.1561, "lng": 5.3878 } ] },
+    { "id": "meubelhuis-noord", "naam": "Meubelhuis Noord", "type": "lokaal", "voorbeeld": true, "vestigingen": [ { "plaats": "Zwolle", "lat": 52.5168, "lng": 6.0830 } ] },
+    { "id": "studiokleur", "naam": "StudioKleur", "type": "lokaal", "voorbeeld": true, "vestigingen": [ { "plaats": "Utrecht", "lat": 52.0907, "lng": 5.1214 } ] },
+    { "id": "interimo", "naam": "Interimo", "type": "keten", "voorbeeld": true, "vestigingen": [ { "plaats": "Ede", "lat": 52.0402, "lng": 5.6649 }, { "plaats": "Den Bosch", "lat": 51.6978, "lng": 5.3037 } ] },
+    { "id": "de-eetkamerzaak", "naam": "De Eetkamerzaak", "type": "lokaal", "voorbeeld": true, "vestigingen": [ { "plaats": "Arnhem", "lat": 51.9851, "lng": 5.8987 } ] },
+    { "id": "metaalwerk-interieur", "naam": "MetaalWerk Interieur", "type": "keten", "voorbeeld": true, "vestigingen": [ { "plaats": "Rotterdam", "lat": 51.9244, "lng": 4.4777 }, { "plaats": "Amsterdam", "lat": 52.3676, "lng": 4.9041 } ] }
+  ]
+}

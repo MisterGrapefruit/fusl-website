@@ -1,0 +1,10 @@
+{
+  "name": "fusl-website",
+  "private": true,
+  "description": "FUSL — statische site met Netlify Functions voor winkelkliks (en later delen en AI).",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "@netlify/blobs": "^10.0.0"
+  }
+}

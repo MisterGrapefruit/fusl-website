@@ -5,6 +5,17 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# De oude swipe-vragenlijst zit nu in Ontdek je stijl
+[[redirects]]
+  from = "/vragenlijst.html"
+  to = "/stijl.html#kamers"
+  status = 301
+
+[[redirects]]
+  from = "/vragenlijst"
+  to = "/stijl.html#kamers"
+  status = 301
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

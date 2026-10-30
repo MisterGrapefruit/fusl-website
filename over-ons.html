@@ -9,17 +9,18 @@
 </head>
 <body>
 
-<nav class="site-nav">
+<nav class="site-nav" aria-label="Hoofdmenu">
   <div class="container">
     <a href="index.html" class="brand">
-      <img src="images/fusl-logo.jpg" alt="FUSL logo">
-      FUSL — First Use, Second Life
+      <img src="images/fusl-logo.jpg" alt="">
+      FUSL
     </a>
     <div class="nav-links">
-      <a href="over-ons.html#hoe-het-werkt">Hoe het werkt</a>
-      <a href="aanbod.html">Aanbod</a>
-      <a href="over-ons.html#voor-winkels">Voor winkels</a>
-      <a href="stijl.html" class="btn btn-accent">Ontdek je stijl</a>
+      <a href="stijl.html">Ontdek je stijl</a>
+      <a href="aanbod.html">Zoeken</a>
+      <a href="aanbod.html#favorieten" class="nav-fav"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Mijn selectie</a>
+      <a href="over-ons.html" aria-current="page">Over FUSL</a>
+      <a href="over-ons.html#voor-winkels" class="nav-shops">Voor winkels</a>
     </div>
   </div>
 </nav>
@@ -128,37 +129,22 @@
   </div>
 </section>
 
-<section class="about-section">
-  <div class="container">
-    <h2 data-cms="testimonialsTitel">Wat mensen over FUSL zeggen</h2>
-    <p><em data-cms="testimonialsIntro">Deze pagina is net live — hieronder staan voorbeeldteksten om de vormgeving te laten zien. Zodra er echte reacties van klanten en winkels binnenkomen, vervangen we deze door hun eigen woorden.</em></p>
-    <div class="testimonial-grid">
-      <div class="testimonial-card">
-        <div class="testimonial-quote" data-cms="testimonial1Quote">Voorbeeldtekst — hier komt straks een echte reactie van een klant over hoe FUSL hen aan de juiste meubels hielp.</div>
-        <div class="testimonial-author" data-cms="testimonial1Auteur">— Voorbeeld, klant (nog te vervangen)</div>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-quote" data-cms="testimonial2Quote">Voorbeeldtekst — hier komt straks een echte reactie van een winkel over de samenwerking met FUSL.</div>
-        <div class="testimonial-author" data-cms="testimonial2Auteur">— Voorbeeld, winkelpartner (nog te vervangen)</div>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-quote" data-cms="testimonial3Quote">Voorbeeldtekst — hier komt straks een echte reactie over een gevonden kortingsactie.</div>
-        <div class="testimonial-author" data-cms="testimonial3Auteur">— Voorbeeld, klant (nog te vervangen)</div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <footer class="site-footer">
   <div class="container">
     <div class="footer-brand">
-      <img src="images/fusl-logo.jpg" alt="FUSL logo">
+      <img src="images/fusl-logo.jpg" alt="">
       <div>
-        <div class="name">FUSL — First Use, Second Life</div>
-        <div class="tagline">Kwaliteit. Duurzaam. Betaalbaar.</div>
+        <div class="name">FUSL</div>
+        <div class="tagline">First Use, Second Life</div>
       </div>
     </div>
-    <div class="footer-note">Duurzaamheid en gemak</div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="stijl.html">Ontdek je stijl</a>
+      <a href="aanbod.html">Zoeken</a>
+      <a href="over-ons.html">Over FUSL</a>
+      <a href="over-ons.html#voor-winkels">Voor winkels</a>
+    </nav>
   </div>
 </footer>
 

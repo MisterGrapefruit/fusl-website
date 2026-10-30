@@ -7,7 +7,9 @@ var FUSL_FAVORITES_KEY = 'fusl_favorites';
 function fuslGetFavorites() {
   try {
     var raw = window.localStorage.getItem(FUSL_FAVORITES_KEY);
-    return raw ? JSON.parse(raw) : [];
+    var list = raw ? JSON.parse(raw) : [];
+    // Voorbeeldstukken hadden eerst nummers als id (1 t/m 20), nu 's1' t/m 's20'.
+    return list.map(function (id) { id = String(id); return /^\d{1,2}$/.test(id) ? 's' + id : id; });
   } catch (e) {
     return [];
   }

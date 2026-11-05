@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>FUSL · Kliks per winkel</title>
+<title>FUSL · Doorverwijzingen</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="kl-body">
@@ -15,7 +15,7 @@
       <img src="images/fusl-logo.jpg" alt="">
       FUSL
     </a>
-    <div class="kl-topbar-title">Kliks per winkel</div>
+    <div class="kl-topbar-title">Doorverwijzingen en omzet</div>
     <a href="index.html" class="kl-back">← Terug naar de site</a>
   </div>
 </header>
@@ -35,49 +35,92 @@
   <div id="kl-dashboard" hidden>
 
     <div class="kl-header-row">
-      <h1>Kliks per winkel</h1>
+      <div>
+        <h1>Doorverwijzingen naar winkels</h1>
+        <p class="kl-sub">Het aantal keer dat een bezoeker op <strong>Bekijk bij [winkel]</strong> klikte en op de eigen website van de winkel uitkwam. Dit is de basis voor de vergoeding per klik.</p>
+      </div>
       <div class="kl-controls">
         <button type="button" id="kl-prev-month" class="kl-month-btn" aria-label="Vorige maand">←</button>
-        <div id="kl-month-label" class="kl-month-label">—</div>
+        <div id="kl-month-label" class="kl-month-label" aria-live="polite">–</div>
         <button type="button" id="kl-next-month" class="kl-month-btn" aria-label="Volgende maand">→</button>
-        <label class="kl-test-toggle"><input type="checkbox" id="kl-test-toggle"> testgegevens</label>
-        <button type="button" id="kl-csv-btn" class="kl-csv-btn">CSV downloaden</button>
-        <button type="button" id="kl-lock-btn" class="kl-lock-btn">Sleutel wissen</button>
       </div>
     </div>
 
     <p class="kl-error" id="kl-error" hidden></p>
 
-    <div class="kl-stat-row" id="kl-stat-row">
-      <div class="kl-stat-tile">
-        <div class="kl-stat-label">Totaal kliks</div>
-        <div class="kl-stat-value" id="kl-stat-total">–</div>
-        <div class="kl-stat-delta" id="kl-stat-delta"></div>
+    <section class="kl-hero" aria-label="Kerncijfers deze maand">
+      <div class="kl-hero-main">
+        <div class="kl-hero-label">Doorverwijzingen naar winkels</div>
+        <div class="kl-hero-value" id="kl-stat-total">–</div>
+        <div class="kl-hero-delta" id="kl-stat-delta"></div>
       </div>
+      <div class="kl-hero-money">
+        <div class="kl-hero-label">Omzet uit kliks</div>
+        <div class="kl-hero-value" id="kl-omzet">–</div>
+        <div class="kl-hero-delta" id="kl-omzet-uitleg"></div>
+      </div>
+    </section>
+
+    <div class="kl-stat-row">
       <div class="kl-stat-tile">
         <div class="kl-stat-label">Winkels met kliks</div>
         <div class="kl-stat-value" id="kl-stat-stores">–</div>
       </div>
       <div class="kl-stat-tile">
-        <div class="kl-stat-label">Top winkel</div>
+        <div class="kl-stat-label">Meeste kliks</div>
         <div class="kl-stat-value kl-stat-value--text" id="kl-stat-top">–</div>
+      </div>
+      <div class="kl-stat-tile">
+        <div class="kl-stat-label" id="kl-prognose-label">Prognose deze maand</div>
+        <div class="kl-stat-value" id="kl-prognose">–</div>
+        <div class="kl-stat-delta" id="kl-prognose-uitleg"></div>
       </div>
     </div>
 
-    <section class="kl-card">
-      <div class="kl-section-head">
-        <h2>Kliks per winkel deze maand</h2>
-        <button type="button" id="kl-table-toggle" class="kl-view-toggle">Toon als tabel</button>
+    <section class="kl-card kl-calc" aria-labelledby="kl-calc-title">
+      <h2 id="kl-calc-title">Omzet berekenen</h2>
+      <div class="kl-calc-grid">
+        <label class="kl-field">
+          <span>Vergoeding per klik</span>
+          <span class="kl-money-input"><span aria-hidden="true">€</span><input type="number" id="kl-prijs" min="0" step="0.05" inputmode="decimal" value="0.45" aria-describedby="kl-prijs-hint"></span>
+          <small id="kl-prijs-hint">Wordt in deze browser onthouden.</small>
+        </label>
+        <label class="kl-field">
+          <span>Kliks per maand (wat als?)</span>
+          <input type="number" id="kl-watals" min="0" step="10" inputmode="numeric">
+          <small>Begint bij de prognose van deze maand.</small>
+        </label>
+        <div class="kl-calc-out" aria-live="polite">
+          <div><span>Per maand</span><strong id="kl-calc-maand">–</strong></div>
+          <div><span>Per jaar</span><strong id="kl-calc-jaar">–</strong></div>
+        </div>
       </div>
-      <div id="kl-bars" class="kl-bars"></div>
-      <div id="kl-table-wrap" class="kl-table-wrap" hidden></div>
-      <p class="kl-empty-msg" id="kl-empty" hidden>Nog geen kliks geteld deze maand.</p>
+      <input type="range" id="kl-watals-slider" min="0" max="5000" step="10" aria-label="Kliks per maand (wat als?)">
     </section>
 
     <section class="kl-card">
-      <h2>Trend — laatste 6 maanden</h2>
+      <div class="kl-section-head">
+        <h2>Per winkel deze maand</h2>
+        <div class="kl-section-tools">
+          <button type="button" id="kl-table-toggle" class="kl-view-toggle">Toon als tabel</button>
+          <button type="button" id="kl-csv-btn" class="kl-view-toggle">Factuuroverzicht (CSV)</button>
+        </div>
+      </div>
+      <div class="kl-bar-head" aria-hidden="true"><span>Winkel</span><span></span><span>Kliks</span><span>Bedrag</span><span></span></div>
+      <div id="kl-bars" class="kl-bars"></div>
+      <div id="kl-table-wrap" class="kl-table-wrap" hidden></div>
+      <p class="kl-empty-msg" id="kl-empty" hidden>Nog geen doorverwijzingen geteld deze maand.</p>
+    </section>
+
+    <section class="kl-card">
+      <h2>Doorverwijzingen en omzet, laatste 6 maanden</h2>
       <div id="kl-trend" class="kl-trend"></div>
     </section>
+
+    <div class="kl-footer-tools">
+      <label class="kl-test-toggle"><input type="checkbox" id="kl-test-toggle"> Toon testgegevens (kliks op testversies)</label>
+      <button type="button" id="kl-lock-btn" class="kl-lock-btn">Sleutel wissen</button>
+    </div>
 
   </div>
 

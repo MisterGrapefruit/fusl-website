@@ -1582,7 +1582,7 @@ img { max-width: 100%; display: block; }
 .kl-view-toggle:hover { background: var(--cream); }
 
 .kl-bar-row { margin-bottom: 10px; }
-.kl-bar-row-main.kl-bar-btn { display: grid; grid-template-columns: 160px 1fr 56px 28px; align-items: center; gap: 12px; width: 100%; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font-family: inherit; }
+.kl-bar-row-main.kl-bar-btn { display: grid; grid-template-columns: 170px 1fr 56px 96px 24px; align-items: center; gap: 12px; width: 100%; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font-family: inherit; }
 .kl-bar-label { font-weight: 700; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
 .kl-bar-track { height: 14px; border-radius: 100px; background: var(--cream); overflow: hidden; position: relative; }
 .kl-bar-fill { display: block; height: 100%; border-radius: 100px; background: var(--brand-accent); transition: width 0.3s ease; min-width: 3px; }
@@ -1591,7 +1591,7 @@ img { max-width: 100%; display: block; }
 .kl-bar-row.kl-open .kl-bar-chevron { transform: rotate(90deg); }
 .kl-bar-detail { display: none; margin: 10px 0 2px 0; padding: 14px 16px; background: var(--cream); border-radius: 14px; }
 .kl-bar-row.kl-open .kl-bar-detail { display: block; }
-.kl-bar-detail-row { display: grid; grid-template-columns: minmax(0,1fr) 110px 32px; align-items: center; gap: 10px; font-size: 12.5px; margin-bottom: 6px; }
+.kl-bar-detail-row { display: grid; grid-template-columns: minmax(0,1fr) 110px 40px 80px; align-items: center; gap: 10px; font-size: 12.5px; margin-bottom: 6px; }
 .kl-bar-detail-row:last-child { margin-bottom: 0; }
 .kl-bar-detail-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(58,44,32,0.8); }
 .kl-bar-detail-track { height: 7px; border-radius: 100px; background: rgba(58,44,32,0.1); overflow: hidden; }
@@ -1616,6 +1616,52 @@ img { max-width: 100%; display: block; }
 @media (max-width: 620px) {
   .kl-main { padding: 24px 16px 56px; }
   .kl-stat-row { grid-template-columns: 1fr; }
-  .kl-bar-row-main.kl-bar-btn { grid-template-columns: 96px 1fr 40px 20px; gap: 8px; }
+  .kl-bar-row-main.kl-bar-btn { grid-template-columns: minmax(0,1fr) 34px 72px 16px; gap: 8px; }
+  .kl-bar-row-main .kl-bar-track, .kl-bar-head span:nth-child(2) { display: none; }
+  .kl-bar-head { grid-template-columns: minmax(0,1fr) 34px 72px 16px; gap: 8px; }
+  .kl-bar-detail-row { grid-template-columns: minmax(0,1fr) 34px 68px; }
+  .kl-bar-detail-track { display: none; }
+  .kl-hero { grid-template-columns: 1fr; }
+  .kl-hero-value { font-size: 40px; }
+  .kl-calc-grid { grid-template-columns: 1fr; }
   .kl-header-row h1 { font-size: 22px; }
+}
+
+/* Kliksdashboard: doorverwijzingen en omzet centraal */
+.kl-sub { margin: 6px 0 0; font-size: 14px; color: rgba(58,44,32,0.7); max-width: 560px; line-height: 1.5; }
+.kl-header-row { align-items: flex-start; }
+.kl-card h2, .kl-section-head h2 { font-size: 18px; color: var(--brand-darker); margin-bottom: 14px; }
+.kl-section-head h2 { margin-bottom: 0; }
+.kl-section-tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.kl-hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; margin-bottom: 16px; }
+.kl-hero-main, .kl-hero-money { border-radius: 24px; padding: 26px 28px; }
+.kl-hero-main { background: var(--brand-darker); color: #fff; }
+.kl-hero-money { background: #fff; box-shadow: 0 10px 26px rgba(58, 44, 32, 0.08); border: 3px solid var(--brand-dark); }
+.kl-hero-label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.8; }
+.kl-hero-value { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 52px; line-height: 1.1; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.kl-hero-money .kl-hero-value { color: var(--brand-dark); }
+.kl-hero-delta { font-size: 13.5px; font-weight: 600; margin-top: 6px; opacity: 0.85; }
+.kl-calc-grid { display: grid; grid-template-columns: 1fr 1fr 1.1fr; gap: 18px; align-items: start; }
+.kl-field { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 700; color: var(--brand-darker); }
+.kl-field small { font-weight: 500; color: rgba(58,44,32,0.6); font-size: 12px; }
+.kl-field input { height: 44px; border: 2px solid var(--tan); border-radius: 12px; padding: 0 12px; font: 600 16px 'Manrope', sans-serif; color: var(--ink); width: 100%; }
+.kl-money-input { position: relative; display: block; }
+.kl-money-input > span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-weight: 700; color: rgba(58,44,32,0.6); }
+.kl-money-input input { padding-left: 28px; }
+.kl-calc-out { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: var(--cream); border-radius: 16px; padding: 14px 16px; }
+.kl-calc-out div { display: flex; flex-direction: column; gap: 2px; }
+.kl-calc-out span { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: rgba(58,44,32,0.6); }
+.kl-calc-out strong { font-family: 'Sora', sans-serif; font-size: 22px; color: var(--brand-dark); font-variant-numeric: tabular-nums; }
+#kl-watals-slider { width: 100%; margin-top: 16px; accent-color: var(--brand-dark); }
+.kl-bar-head { display: grid; grid-template-columns: 170px 1fr 56px 96px 24px; gap: 12px; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: rgba(58,44,32,0.5); margin: 4px 0 8px; }
+.kl-bar-head span:nth-child(3), .kl-bar-head span:nth-child(4) { text-align: right; }
+.kl-bar-amount { text-align: right; font-weight: 800; color: var(--brand-darker); font-variant-numeric: tabular-nums; font-size: 13.5px; }
+.kl-table tfoot th { color: var(--brand-darker); font-size: 13.5px; text-transform: none; letter-spacing: 0; border-bottom: 0; }
+.kl-footer-tools { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; }
+@media (max-width: 620px) {
+  .kl-hero, .kl-calc-grid { grid-template-columns: 1fr; }
+  .kl-hero-value { font-size: 40px; }
+  .kl-bar-head { grid-template-columns: minmax(0,1fr) 34px 72px 16px; gap: 8px; }
+  .kl-section-head { flex-wrap: wrap; }
+  .kl-trend svg text { font-size: 18px; }
 }

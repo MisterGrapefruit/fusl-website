@@ -34,10 +34,17 @@ Voeg `&formaat=csv` toe voor een Excel-bestand. Vooral handig voor een
 boekhoudkoppeling of losse export; voor zelf rondkijken is het kliksdashboard
 hierboven prettiger.
 
+## Wat het dashboard laat zien
+- **Doorverwijzingen naar winkels** en de **omzet** volgens de tarieven per winkel. Tarieven stel je in het dashboard zelf in (standaardtarief, eigen tarief, maximum per maand, gratis periode); ze staan in Netlify Blobs en niet in de openbare bestanden.
+- **Waar kliks vandaan komen:** zoekpagina, zoeken met jouw stijl, Mijn selectie of gedeelde selectie.
+- **Bezoekers** van de eigen teller (`js/teller.js` → `/api/bezoek`): geen cookies, geen IP-adressen; één bezoeker = één persoon per dag. Met herkomst (zoekmachine, social, direct, andere website, campagne via `utm_source`) en de meest bekeken pagina's.
+- **Per dag of per week** voor de gekozen maand.
+
 ## Wat wordt waar bewaard
 - **Alleen in de browser van de bezoeker:** stijlprofiel, Mijn selectie en postcode. De postcode wordt één keer opgezocht bij de PDOK Locatieserver van de overheid.
 - **Netlify Blobs:**
-  - kliktellingen (zonder IP-adres; met een hash die elke dag verandert);
+  - kliktellingen en bezoekerstellingen (zonder IP-adres; met een hash die elke dag verandert);
+  - de tarieven per winkel;
   - gedeelde selecties en reacties (alleen voornamen), tot de link wordt uitgezet;
   - AI-dagtellers en het maandbudget.
 - **Moodboard-afbeeldingen:** worden verkleind en alleen voor de analyse naar Anthropic gestuurd. FUSL bewaart ze niet.

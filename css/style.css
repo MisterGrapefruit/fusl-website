@@ -1665,3 +1665,46 @@ img { max-width: 100%; display: block; }
   .kl-section-head { flex-wrap: wrap; }
   .kl-trend svg text { font-size: 18px; }
 }
+
+/* Kliksdashboard: tarieven, per dag, herkomst en bezoekers */
+.kl-sub-small { font-size: 13px; margin: -6px 0 14px; }
+.kl-h3 { font-family: 'Sora', sans-serif; font-size: 15px; color: var(--brand-darker); margin: 22px 0 10px; }
+.kl-two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.kl-two .kl-card { margin-bottom: 24px; }
+.kl-seg { display: inline-flex; background: var(--cream); border-radius: 100px; padding: 3px; }
+.kl-seg button { border: 0; background: none; border-radius: 100px; padding: 7px 14px; font: 700 12.5px 'Manrope', sans-serif; color: var(--ink); cursor: pointer; }
+.kl-seg button[aria-pressed="true"] { background: var(--brand-darker); color: #fff; }
+.kl-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; font-weight: 600; color: rgba(58,44,32,0.7); margin: 4px 0 6px; }
+.kl-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.kl-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.kl-dot-kliks { background: #213b1e; }
+.kl-dot-bezoek { background: #9fc99e; }
+.kl-dag { cursor: pointer; }
+.kl-mini-row { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 40px 40px; align-items: center; gap: 10px; font-size: 13.5px; margin-bottom: 8px; }
+.kl-mini-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.kl-mini-track { height: 10px; border-radius: 100px; background: var(--cream); overflow: hidden; }
+.kl-mini-fill { display: block; height: 100%; border-radius: 100px; background: var(--brand-accent); }
+.kl-mini-count { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.kl-mini-pct { text-align: right; color: rgba(58,44,32,0.55); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.kl-bar-amount small { display: block; font-size: 10.5px; font-weight: 600; color: var(--rust); }
+.kl-tarieven summary { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; cursor: pointer; list-style: none; flex-wrap: wrap; }
+.kl-tarieven summary::-webkit-details-marker { display: none; }
+.kl-tarieven summary h2 { margin: 0; }
+.kl-tarieven summary h2::after { content: ' ▸'; color: rgba(58,44,32,0.45); font-size: 14px; }
+.kl-tarieven[open] summary h2::after { content: ' ▾'; }
+.kl-tarieven summary span { font-size: 13px; font-weight: 600; color: rgba(58,44,32,0.65); }
+.kl-tarieven .kl-sub { margin: 14px 0; }
+.kl-field-inline { max-width: 240px; margin-bottom: 14px; }
+.kl-tarief-tabel input { height: 38px; border: 2px solid var(--tan); border-radius: 10px; padding: 0 10px; font: 600 14px 'Manrope', sans-serif; color: var(--ink); width: 100%; min-width: 110px; background: #fff; }
+.kl-tarief-tabel .kl-money-input input { padding-left: 24px; }
+.kl-tarief-tabel td { vertical-align: middle; }
+.kl-tarief-acties { display: flex; align-items: center; gap: 14px; margin-top: 16px; font-size: 13.5px; font-weight: 600; color: var(--brand-dark); }
+@media (max-width: 760px) {
+  .kl-two { grid-template-columns: 1fr; gap: 0; }
+  .kl-mini-row { grid-template-columns: minmax(0, 1fr) 70px 34px 36px; }
+  .kl-tarief-tabel thead { display: none; }
+  .kl-tarief-tabel tr { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; padding: 10px 0; border-bottom: 1px solid var(--tan); }
+  .kl-tarief-tabel td { border: 0; padding: 0; }
+  .kl-tarief-tabel td:first-child { grid-column: 1 / -1; font-weight: 700; }
+}
+.kl-tarief-tabel input::placeholder { color: rgba(58,44,32,0.35); font-weight: 500; }

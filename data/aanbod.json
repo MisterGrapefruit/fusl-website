@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-14T13:27:12.587Z",
-  "storeCount": 1,
-  "listingCount": 2,
+  "generatedAt": "2026-11-05T15:45:00.000Z",
+  "storeCount": 3,
+  "listingCount": 4,
   "listings": [
     {
       "id": "woonstijl-verhoeven-WV-1001",
@@ -42,6 +42,48 @@
       "imageUrl": "https://example-winkel.nl/img/vitrinekast.jpg",
       "productUrl": "https://example-winkel.nl/producten/vitrinekast-landelijk",
       "lastSynced": "2026-09-14T13:27:12.582Z"
+    },
+    {
+      "id": "studiokleur-SK-2001",
+      "externalId": "SK-2001",
+      "storeId": "studiokleur",
+      "storeName": "StudioKleur",
+      "storeType": "lokaal",
+      "name": "Chesterfield tweezits",
+      "category": "bank",
+      "color": "Terracotta",
+      "style": "Retro",
+      "price": 1099,
+      "salePrice": null,
+      "saleValidFrom": null,
+      "saleValidUntil": null,
+      "inStock": true,
+      "status": "Showroommodel.",
+      "imageUrl": null,
+      "productUrl": "https://www.example.com/studiokleur/chesterfield-tweezits",
+      "firstSeen": "2026-11-05T15:45:00.000Z",
+      "lastSynced": "2026-11-05T15:45:00.000Z"
+    },
+    {
+      "id": "metaalwerk-interieur-MW-3001",
+      "externalId": "MW-3001",
+      "storeId": "metaalwerk-interieur",
+      "storeName": "MetaalWerk Interieur",
+      "storeType": "keten",
+      "name": "Industriële wandkast",
+      "category": "kast",
+      "color": "Zwart",
+      "style": "Industrieel",
+      "price": 540,
+      "salePrice": null,
+      "saleValidFrom": null,
+      "saleValidUntil": null,
+      "inStock": true,
+      "status": "Laatste exemplaar.",
+      "imageUrl": null,
+      "productUrl": "https://www.example.com/metaalwerk/industriele-wandkast",
+      "firstSeen": "2026-11-05T15:45:00.000Z",
+      "lastSynced": "2026-11-05T15:45:00.000Z"
     }
   ]
 }

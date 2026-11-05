@@ -12,14 +12,37 @@
 
 (function () {
   var SLEUTEL_KEY = 'fusl_rapport_sleutel';
+  var PRIJS_KEY = 'fusl_prijs_per_klik';
+  var STANDAARD_PRIJS = 0.45;
 
   var el = {};
   var state = {
     sleutel: '',
     maand: huidigeMaand(),
     test: false,
-    cache: {} // "maand|test" -> rapport-object
+    cache: {}, // "maand|test" -> rapport-object
+    prijs: leesPrijs(),
+    huidig: null,
+    trend: [],
+    watals: null // null = volgt de prognose
   };
+
+  function leesPrijs() {
+    try { var v = parseFloat(window.localStorage.getItem(PRIJS_KEY)); if (v >= 0) return v; } catch (e) {}
+    return STANDAARD_PRIJS;
+  }
+  function euro(n) { return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n || 0); }
+  function getal(n) { return Math.round(n || 0).toLocaleString('nl-NL'); }
+
+  // Prognose voor de lopende maand: tempo tot nu toe doorgetrokken naar de hele maand.
+  function prognose(data) {
+    if (!data || state.maand !== huidigeMaand()) return null;
+    var nu = new Date();
+    var dagen = new Date(nu.getFullYear(), nu.getMonth() + 1, 0).getDate();
+    var verstreken = nu.getDate() - 1 + nu.getHours() / 24;
+    if (verstreken < 1) return null; // eerste dag: nog te weinig om iets over te zeggen
+    return Math.round(data.totaal / verstreken * dagen);
+  }
 
   function huidigeMaand() {
     var d = new Date();
@@ -126,10 +149,10 @@
         var huidig = bijMaand[state.maand];
         if (!huidig) { toonFoutmelding(); return; }
 
+        state.huidig = huidig;
+        state.trend = trendMaanden.map(function (m) { return { maand: m, totaal: bijMaand[m] ? bijMaand[m].totaal : null }; });
         renderStats(huidig, bijMaand[vorigeMaand]);
-        renderBars(huidig);
-        renderTabel(huidig);
-        renderTrend(trendMaanden.map(function (m) { return { maand: m, totaal: bijMaand[m] ? bijMaand[m].totaal : null }; }));
+        renderTrend(state.trend);
       })
       .catch(function () { toonFoutmelding(); });
   }
@@ -140,28 +163,59 @@
   }
 
   function renderStats(data, vorigeData) {
-    el.statTotal.textContent = data.totaal.toLocaleString('nl-NL');
+    el.statTotal.textContent = getal(data.totaal);
     el.statStores.textContent = String(data.winkels.length);
     el.statTop.textContent = data.winkels.length ? data.winkels[0].winkel : '—';
 
+    var delta = '';
     if (vorigeData && typeof vorigeData.totaal === 'number') {
       var verschil = data.totaal - vorigeData.totaal;
       if (vorigeData.totaal > 0) {
         var pct = Math.round((verschil / vorigeData.totaal) * 100);
-        el.statDelta.textContent = (verschil >= 0 ? '↑ ' : '↓ ') + Math.abs(pct) + '% t.o.v. vorige maand';
+        delta = (verschil >= 0 ? '↑ ' : '↓ ') + Math.abs(pct) + '% t.o.v. vorige maand (' + getal(vorigeData.totaal) + ')';
       } else if (data.totaal > 0) {
-        el.statDelta.textContent = '↑ nieuw t.o.v. vorige maand';
-      } else {
-        el.statDelta.textContent = '';
+        delta = 'Vorige maand: 0';
       }
-    } else {
-      el.statDelta.textContent = '';
     }
+    el.statDelta.textContent = delta;
+    renderOmzet();
+  }
+
+  // Alles wat van de prijs per klik afhangt; opnieuw bij elke prijswijziging.
+  function renderOmzet() {
+    var data = state.huidig;
+    if (!data) return;
+    el.omzet.textContent = euro(data.totaal * state.prijs);
+    el.omzetUitleg.textContent = getal(data.totaal) + ' kliks × ' + euro(state.prijs);
+
+    var prog = prognose(data);
+    if (prog != null) {
+      el.prognoseLabel.textContent = 'Prognose deze maand';
+      el.prognose.textContent = euro(prog * state.prijs);
+      el.prognoseUitleg.textContent = 'ca. ' + getal(prog) + ' kliks bij het huidige tempo';
+    } else {
+      var trendMetData = state.trend.filter(function (r) { return r.totaal; });
+      var gem = trendMetData.length ? trendMetData.reduce(function (t, r) { return t + r.totaal; }, 0) / trendMetData.length : 0;
+      el.prognoseLabel.textContent = 'Gemiddeld per maand';
+      el.prognose.textContent = euro(gem * state.prijs);
+      el.prognoseUitleg.textContent = 'ca. ' + getal(gem) + ' kliks, laatste 6 maanden';
+    }
+
+    var basis = state.watals != null ? state.watals : (prog != null ? prog : data.totaal);
+    if (state.watals == null) { el.watals.value = basis; }
+    el.slider.max = Math.max(1000, Math.ceil(basis * 3 / 100) * 100);
+    el.slider.value = basis;
+    el.calcMaand.textContent = euro(basis * state.prijs);
+    el.calcJaar.textContent = euro(basis * state.prijs * 12);
+
+    renderBars(data);
+    renderTabel(data);
   }
 
   function renderBars(data) {
     el.bars.innerHTML = '';
     el.empty.hidden = data.winkels.length > 0;
+    document.querySelector('.kl-bar-head').hidden = !data.winkels.length || el.bars.hidden;
     if (!data.winkels.length) return;
 
     var max = data.winkels[0].kliks || 1;
@@ -172,10 +226,11 @@
 
       var pct = Math.max(2, Math.round((w.kliks / max) * 100));
       row.innerHTML =
-        '<button type="button" class="kl-bar-btn kl-bar-row-main">' +
+        '<button type="button" class="kl-bar-btn kl-bar-row-main" aria-expanded="false">' +
           '<span class="kl-bar-label">' + escapeHtml(w.winkel) + '</span>' +
           '<span class="kl-bar-track"><span class="kl-bar-fill" style="width:' + pct + '%"></span></span>' +
           '<span class="kl-bar-count">' + w.kliks.toLocaleString('nl-NL') + '</span>' +
+          '<span class="kl-bar-amount">' + euro(w.kliks * state.prijs) + '</span>' +
           '<span class="kl-bar-chevron">▸</span>' +
         '</button>' +
         '<div class="kl-bar-detail"></div>';
@@ -185,6 +240,7 @@
 
       btn.addEventListener('click', function () {
         var open = row.classList.contains('kl-open');
+        btn.setAttribute('aria-expanded', open ? 'false' : 'true');
         if (open) { row.classList.remove('kl-open'); return; }
         if (!detail.dataset.gevuld) {
           detail.innerHTML = w.producten.map(function (p) {
@@ -193,6 +249,7 @@
               '<span class="kl-bar-detail-label">' + escapeHtml(p.product) + '</span>' +
               '<span class="kl-bar-detail-track"><span class="kl-bar-detail-fill" style="width:' + ppct + '%"></span></span>' +
               '<span class="kl-bar-detail-count">' + p.kliks.toLocaleString('nl-NL') + '</span>' +
+              '<span class="kl-bar-detail-count">' + euro(p.kliks * state.prijs) + '</span>' +
             '</div>';
           }).join('');
           detail.dataset.gevuld = '1';
@@ -201,11 +258,7 @@
       });
 
       var totaalDitRapport = data.totaal || 1;
-      btn.addEventListener('mouseenter', function (ev) { toonTooltip(ev, w.winkel + ': ' + w.kliks.toLocaleString('nl-NL') + ' kliks (' + Math.round((w.kliks / totaalDitRapport) * 100) + '% van de maand)'); });
-      btn.addEventListener('mousemove', verplaatsTooltip);
-      btn.addEventListener('mouseleave', verbergTooltip);
-      btn.addEventListener('focus', function (ev) { toonTooltipBijElement(btn, w.winkel + ': ' + w.kliks.toLocaleString('nl-NL') + ' kliks'); });
-      btn.addEventListener('blur', verbergTooltip);
+      btn.title = w.winkel + ': ' + Math.round((w.kliks / totaalDitRapport) * 100) + '% van alle kliks deze maand. Klik voor de stukken.';
 
       el.bars.appendChild(row);
     });
@@ -214,10 +267,11 @@
   function renderTabel(data) {
     if (!data.winkels.length) { el.tableWrap.hidden = true; el.tableWrap.innerHTML = ''; return; }
     var rijen = data.winkels.map(function (w) {
-      return '<tr><td>' + escapeHtml(w.winkel) + '</td><td class="kl-table-num">' + w.kliks.toLocaleString('nl-NL') + '</td></tr>';
+      return '<tr><td>' + escapeHtml(w.winkel) + '</td><td class="kl-table-num">' + w.kliks.toLocaleString('nl-NL') + '</td><td class="kl-table-num">' + euro(w.kliks * state.prijs) + '</td></tr>';
     }).join('');
     el.tableWrap.innerHTML =
-      '<table class="kl-table"><thead><tr><th>Winkel</th><th class="kl-table-num">Kliks</th></tr></thead><tbody>' + rijen + '</tbody></table>';
+      '<table class="kl-table"><thead><tr><th>Winkel</th><th class="kl-table-num">Kliks</th><th class="kl-table-num">Bedrag</th></tr></thead><tbody>' + rijen +
+      '</tbody><tfoot><tr><th>Totaal</th><th class="kl-table-num">' + getal(data.totaal) + '</th><th class="kl-table-num">' + euro(data.totaal * state.prijs) + '</th></tr></tfoot></table>';
   }
 
   function renderTrend(reeks) {
@@ -255,7 +309,7 @@
       c.addEventListener('mouseenter', function (ev) {
         var i = Number(c.getAttribute('data-i'));
         var r = reeks[i];
-        toonTooltip(ev, maandLabel(r.maand) + ': ' + (r.totaal === null ? 'geen data' : r.totaal.toLocaleString('nl-NL') + ' kliks'));
+        toonTooltip(ev, maandLabel(r.maand) + ': ' + (r.totaal === null ? 'geen data' : r.totaal.toLocaleString('nl-NL') + ' kliks · ' + euro(r.totaal * state.prijs)));
       });
       c.addEventListener('mousemove', verplaatsTooltip);
       c.addEventListener('mouseleave', verbergTooltip);
@@ -291,20 +345,26 @@
   // ---- CSV-export (via fetch + blob, zodat de sleutel nooit in een URL staat) ----
 
   function downloadCsv() {
-    var url = 'api/klik-rapport?maand=' + encodeURIComponent(state.maand) + '&formaat=csv' + (state.test ? '&test=1' : '');
-    fetch(url, { headers: { 'x-rapport-sleutel': state.sleutel } })
-      .then(function (res) { if (!res.ok) throw new Error('netwerk'); return res.blob(); })
-      .then(function (blob) {
-        var a = document.createElement('a');
-        var objectUrl = URL.createObjectURL(blob);
-        a.href = objectUrl;
-        a.download = 'fusl-kliks-' + state.maand + (state.test ? '-test' : '') + '.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function () { URL.revokeObjectURL(objectUrl); }, 1000);
-      })
-      .catch(function () { toonFoutmelding(); });
+    var data = state.huidig;
+    if (!data) return;
+    var q = function (x) { return '"' + String(x).replace(/"/g, '""') + '"'; };
+    var bedrag = function (n) { return (n * state.prijs).toFixed(2).replace('.', ','); };
+    var regels = ['maand;winkel;stuk;kliks;prijs per klik;bedrag'];
+    data.winkels.forEach(function (w) {
+      w.producten.forEach(function (p) {
+        regels.push([state.maand, q(w.winkel), q(p.product), p.kliks, state.prijs.toFixed(2).replace('.', ','), bedrag(p.kliks)].join(';'));
+      });
+      regels.push([state.maand, q(w.winkel), q('Totaal ' + w.winkel), w.kliks, state.prijs.toFixed(2).replace('.', ','), bedrag(w.kliks)].join(';'));
+    });
+    var blob = new Blob(['\ufeff' + regels.join('\n')], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    var objectUrl = URL.createObjectURL(blob);
+    a.href = objectUrl;
+    a.download = 'fusl-factuuroverzicht-' + state.maand + (state.test ? '-test' : '') + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(objectUrl); }, 1000);
   }
 
   // ---- Init ----
@@ -332,6 +392,35 @@
     el.empty = document.getElementById('kl-empty');
     el.trend = document.getElementById('kl-trend');
     el.tooltip = document.getElementById('kl-tooltip');
+    el.omzet = document.getElementById('kl-omzet');
+    el.omzetUitleg = document.getElementById('kl-omzet-uitleg');
+    el.prognose = document.getElementById('kl-prognose');
+    el.prognoseLabel = document.getElementById('kl-prognose-label');
+    el.prognoseUitleg = document.getElementById('kl-prognose-uitleg');
+    el.prijs = document.getElementById('kl-prijs');
+    el.watals = document.getElementById('kl-watals');
+    el.slider = document.getElementById('kl-watals-slider');
+    el.calcMaand = document.getElementById('kl-calc-maand');
+    el.calcJaar = document.getElementById('kl-calc-jaar');
+
+    el.prijs.value = state.prijs.toFixed(2);
+    el.prijs.addEventListener('input', function () {
+      var v = parseFloat(String(el.prijs.value).replace(',', '.'));
+      if (!(v >= 0)) return;
+      state.prijs = v;
+      try { window.localStorage.setItem(PRIJS_KEY, String(v)); } catch (e) {}
+      renderOmzet();
+    });
+    el.watals.addEventListener('input', function () {
+      var v = parseInt(el.watals.value, 10);
+      state.watals = v >= 0 ? v : null;
+      renderOmzet();
+    });
+    el.slider.addEventListener('input', function () {
+      state.watals = parseInt(el.slider.value, 10);
+      el.watals.value = state.watals;
+      renderOmzet();
+    });
 
     el.gateForm.addEventListener('submit', function (ev) {
       ev.preventDefault();
@@ -340,8 +429,8 @@
       probeerOntgrendelen(sleutel);
     });
 
-    el.prevBtn.addEventListener('click', function () { state.maand = verschuifMaand(state.maand, -1); verversAlles(); });
-    el.nextBtn.addEventListener('click', function () { if (!huidigIsGeselecteerd()) { state.maand = verschuifMaand(state.maand, 1); verversAlles(); } });
+    el.prevBtn.addEventListener('click', function () { state.maand = verschuifMaand(state.maand, -1); state.watals = null; verversAlles(); });
+    el.nextBtn.addEventListener('click', function () { if (!huidigIsGeselecteerd()) { state.maand = verschuifMaand(state.maand, 1); state.watals = null; verversAlles(); } });
 
     el.testToggle.addEventListener('change', function () { state.test = el.testToggle.checked; state.cache = {}; verversAlles(); });
     el.csvBtn.addEventListener('click', downloadCsv);
@@ -359,6 +448,7 @@
       el.bars.hidden = naarTabel;
       el.tableWrap.hidden = !naarTabel;
       el.tableToggle.textContent = naarTabel ? 'Toon als balken' : 'Toon als tabel';
+      document.querySelector('.kl-bar-head').hidden = naarTabel;
     });
 
     var opgeslagen = null;

@@ -16,10 +16,23 @@ Optioneel:
 
 Zet daarnaast in de Anthropic Console zelf ook een maandlimiet. Dan heb je dubbele zekerheid.
 
-## Klikrapport
+## Kliksdashboard
+`https://fuslfurniture.nl/kliks.html`
+
+Een eigen overzicht (geen Google) van hoeveel bezoekers per winkel en per stuk
+worden doorverwezen — als basis voor de maandfactuur per klik. Bij het eerste
+bezoek vraagt de pagina om je rapportsleutel (dezelfde als `RAPPORT_SLEUTEL`
+hieronder); die blijft daarna alleen in die browser bewaard. Niet gelinkt
+vanuit het hoofdmenu en met `noindex`, dus alleen te vinden als je de link
+hebt. Met de maandpijltjes blader je terug, met "CSV downloaden" krijg je
+hetzelfde bestand als via de link hieronder.
+
+## Klikrapport (ruwe data)
 `https://fuslfurniture.nl/api/klik-rapport?maand=2026-11&sleutel=JOUW_RAPPORT_SLEUTEL`
 
-Voeg `&formaat=csv` toe voor een Excel-bestand.
+Voeg `&formaat=csv` toe voor een Excel-bestand. Vooral handig voor een
+boekhoudkoppeling of losse export; voor zelf rondkijken is het kliksdashboard
+hierboven prettiger.
 
 ## Wat wordt waar bewaard
 - **Alleen in de browser van de bezoeker:** stijlprofiel, Mijn selectie en postcode. De postcode wordt één keer opgezocht bij de PDOK Locatieserver van de overheid.

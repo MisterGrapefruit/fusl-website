@@ -92,7 +92,7 @@ function fuslShowCookieBanner(onAccept, onDecline) {
   banner.className = 'cookie-banner';
   banner.id = 'cookie-banner';
   banner.innerHTML =
-    '<div class="cookie-banner-text">We gebruiken analytics-cookies om te zien hoe de site gebruikt wordt — ook om partnerwinkels te kunnen laten zien hoeveel bezoekers we doorsturen. Vind je dat goed?</div>' +
+    '<div class="cookie-banner-text">We gebruiken analytics-cookies om te zien hoe de site gebruikt wordt — ook om partnerwinkels te kunnen laten zien hoeveel bezoekers we doorsturen. Vind je dat goed? <a href="privacy.html" class="cookie-banner-link">Lees meer in onze privacyverklaring</a></div>' +
     '<div class="cookie-banner-actions">' +
       '<button type="button" class="btn btn-white" id="cookie-decline">Liever niet</button>' +
       '<button type="button" class="btn btn-accent" id="cookie-accept">Akkoord</button>' +

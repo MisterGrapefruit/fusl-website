@@ -21,7 +21,7 @@
     var html = '';
     if (editing) {
       html += '<form class="gd-name" id="gd-name-form"><div class="sl-field"><label for="gd-voornaam">Hoe heet je?</label>' +
-        '<span class="sl-meta">Zo weet ' + esc(owner) + ' van wie de reacties komen. Alleen je voornaam, verder niets.</span>' +
+        '<span class="sl-meta">Zo weet ' + esc(owner) + ' van wie de reacties komen. Alleen je voornaam, verder niets. <a href="privacy.html" class="text-link">Meer over privacy</a></span>' +
         '<input id="gd-voornaam" type="text" maxlength="30" autocomplete="given-name" placeholder="Je voornaam" value="' + esc(me.voornaam || '') + '" required></div>' +
         '<button type="submit" class="btn btn-green">Verder</button></form>';
     } else {

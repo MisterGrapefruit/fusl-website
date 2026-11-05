@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>FUSL · Kliks per winkel</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="kl-body">
+
+<header class="kl-topbar">
+  <div class="container kl-topbar-inner">
+    <a href="index.html" class="brand">
+      <img src="images/fusl-logo.jpg" alt="">
+      FUSL
+    </a>
+    <div class="kl-topbar-title">Kliks per winkel</div>
+    <a href="index.html" class="kl-back">← Terug naar de site</a>
+  </div>
+</header>
+
+<main class="container kl-main">
+
+  <section class="kl-card kl-gate" id="kl-gate">
+    <h1>Toegang tot je kliks</h1>
+    <p>Vul je rapportsleutel in — dezelfde waarde als <code>RAPPORT_SLEUTEL</code> bij Netlify. Die sleutel wordt alleen in déze browser bewaard, nooit verstuurd naar iets anders dan je eigen site.</p>
+    <form id="kl-gate-form" class="kl-gate-form">
+      <input type="password" id="kl-gate-input" placeholder="Jouw rapportsleutel" autocomplete="off" autofocus>
+      <button type="submit" class="btn btn-accent">Bekijken</button>
+    </form>
+    <p class="kl-gate-error" id="kl-gate-error" hidden></p>
+  </section>
+
+  <div id="kl-dashboard" hidden>
+
+    <div class="kl-header-row">
+      <h1>Kliks per winkel</h1>
+      <div class="kl-controls">
+        <button type="button" id="kl-prev-month" class="kl-month-btn" aria-label="Vorige maand">←</button>
+        <div id="kl-month-label" class="kl-month-label">—</div>
+        <button type="button" id="kl-next-month" class="kl-month-btn" aria-label="Volgende maand">→</button>
+        <label class="kl-test-toggle"><input type="checkbox" id="kl-test-toggle"> testgegevens</label>
+        <button type="button" id="kl-csv-btn" class="kl-csv-btn">CSV downloaden</button>
+        <button type="button" id="kl-lock-btn" class="kl-lock-btn">Sleutel wissen</button>
+      </div>
+    </div>
+
+    <p class="kl-error" id="kl-error" hidden></p>
+
+    <div class="kl-stat-row" id="kl-stat-row">
+      <div class="kl-stat-tile">
+        <div class="kl-stat-label">Totaal kliks</div>
+        <div class="kl-stat-value" id="kl-stat-total">–</div>
+        <div class="kl-stat-delta" id="kl-stat-delta"></div>
+      </div>
+      <div class="kl-stat-tile">
+        <div class="kl-stat-label">Winkels met kliks</div>
+        <div class="kl-stat-value" id="kl-stat-stores">–</div>
+      </div>
+      <div class="kl-stat-tile">
+        <div class="kl-stat-label">Top winkel</div>
+        <div class="kl-stat-value kl-stat-value--text" id="kl-stat-top">–</div>
+      </div>
+    </div>
+
+    <section class="kl-card">
+      <div class="kl-section-head">
+        <h2>Kliks per winkel deze maand</h2>
+        <button type="button" id="kl-table-toggle" class="kl-view-toggle">Toon als tabel</button>
+      </div>
+      <div id="kl-bars" class="kl-bars"></div>
+      <div id="kl-table-wrap" class="kl-table-wrap" hidden></div>
+      <p class="kl-empty-msg" id="kl-empty" hidden>Nog geen kliks geteld deze maand.</p>
+    </section>
+
+    <section class="kl-card">
+      <h2>Trend — laatste 6 maanden</h2>
+      <div id="kl-trend" class="kl-trend"></div>
+    </section>
+
+  </div>
+
+</main>
+
+<div class="kl-tooltip" id="kl-tooltip" hidden role="status"></div>
+
+<script src="js/kliks.js"></script>
+</body>
+</html>

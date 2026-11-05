@@ -1722,3 +1722,4 @@ img { max-width: 100%; display: block; }
 .pv-table thead th { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.03em; color: rgba(58,44,32,0.6); }
 .pv-table tbody th { color: var(--brand-darker); }
 .pv-table tr:last-child th, .pv-table tr:last-child td { border-bottom: 0; }
+.cookie-banner-link { color: inherit; font-weight: 700; text-decoration: underline; margin-left: 4px; }

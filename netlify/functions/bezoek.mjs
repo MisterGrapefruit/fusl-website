@@ -10,7 +10,7 @@
 //   de dag vastgelegd.
 
 import { randomBytes } from 'node:crypto';
-import { storeVoor, datumNL, veiligDeel, hash, BOTS } from '../lib/winkelkliks.mjs';
+import { storeVoor, datumNL, veiligDeel, terugDeel, hash, BOTS, DAG_MS } from '../lib/winkelkliks.mjs';
 
 const ZOEKMACHINES = /(^|\.)(google|bing|duckduckgo|ecosia|yahoo|startpagina|qwant)\./;
 const SOCIAL = [['instagram', 'Instagram'], ['facebook', 'Facebook'], ['fb.', 'Facebook'], ['pinterest', 'Pinterest'], ['tiktok', 'TikTok'], ['linkedin', 'LinkedIn'], ['lnkd.', 'LinkedIn'], ['whatsapp', 'WhatsApp'], ['wa.me', 'WhatsApp'], ['t.co', 'X / Twitter'], ['twitter', 'X / Twitter'], ['x.com', 'X / Twitter']];
@@ -32,6 +32,36 @@ function schoonPad(p) {
   if (!/^\/[a-z0-9._\/-]*$/.test(pad)) return '/overig';
   if (pad === '/' || pad === '/index.html') return '/';
   return pad.replace(/\.html$/, '');
+}
+
+// Vat de bezoekers van dagen vóór `gisteren` samen tot een totaal per dag en
+// herkomst (dagtotaal/<dag>), en wist daarna alle dagcodes van die dagen.
+// Zo blijven er na twee dagen alleen totalen over.
+export async function vatSamen(db, gisteren) {
+  const slot = Number(await db.get('slot/samenvatten')) || 0;
+  if (Date.now() - slot < 120000) return; // een andere aanroep is al bezig
+  await db.set('slot/samenvatten', String(Date.now()));
+  const perDag = {};
+  const weg = [];
+  for await (const pagina of db.list({ prefix: 'bezoekers/', paginate: true })) {
+    for (const b of pagina.blobs) {
+      const [, dag, bron] = b.key.split('/');
+      if (dag >= gisteren) continue;
+      const d = (perDag[dag] = perDag[dag] || {});
+      const naam = terugDeel(bron);
+      d[naam] = (d[naam] || 0) + 1;
+      weg.push(b.key);
+    }
+  }
+  for (const [dag, herkomst] of Object.entries(perDag)) {
+    const oud = (await db.get(`dagtotaal/${dag}`, { type: 'json' })) || {};
+    Object.entries(herkomst).forEach(([k, n]) => { oud[k] = (oud[k] || 0) + n; });
+    await db.setJSON(`dagtotaal/${dag}`, oud);
+  }
+  for (const k of weg) await db.delete(k);
+  for await (const pagina of db.list({ prefix: 'bezoeker/', paginate: true })) {
+    for (const b of pagina.blobs) if (b.key.split('/')[1] < gisteren) await db.delete(b.key);
+  }
 }
 
 export default async (req, context) => {
@@ -61,6 +91,8 @@ export default async (req, context) => {
   } catch (e) {
     console.error('bezoek niet geteld', e);
   }
+  // Af en toe opruimen: dagcodes ouder dan gisteren samenvatten tot totalen.
+  if (Math.random() < 0.05) await vatSamen(db, datumNL(new Date(nu - DAG_MS))).catch((e) => console.error('samenvatten', e));
   return leeg();
 };
 

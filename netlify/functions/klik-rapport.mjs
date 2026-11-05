@@ -44,6 +44,17 @@ export default async (req) => {
     const b = terugDeel(bron);
     bezoek.herkomst[b] = (bezoek.herkomst[b] || 0) + 1;
   }
+  // Oudere dagen zijn samengevat tot totalen (zonder dagcodes)
+  for (const key of await alleSleutels(store, `dagtotaal/${maand}-`)) {
+    const dag = key.split('/')[1];
+    const herkomst = (await store.get(key, { type: 'json' })) || {};
+    Object.entries(herkomst).forEach(([b, n]) => {
+      bezoek.bezoekers += n;
+      const d = (bezoek.perDag[dag] = bezoek.perDag[dag] || { bezoekers: 0, weergaven: 0 });
+      d.bezoekers += n;
+      bezoek.herkomst[b] = (bezoek.herkomst[b] || 0) + n;
+    });
+  }
   for (const key of await alleSleutels(store, `pv/${maand}-`)) {
     const [, dag, pad] = key.split('/');
     bezoek.weergaven += 1;

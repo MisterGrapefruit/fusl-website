@@ -12,7 +12,6 @@
 
 (function () {
   var SLEUTEL_KEY = 'fusl_rapport_sleutel';
-  var PRIJS_KEY = 'fusl_prijs_per_klik';
   var STANDAARD_PRIJS = 0.45;
 
   var el = {};
@@ -21,16 +20,39 @@
     maand: huidigeMaand(),
     test: false,
     cache: {}, // "maand|test" -> rapport-object
-    prijs: leesPrijs(),
+    prijs: STANDAARD_PRIJS,
     huidig: null,
     trend: [],
-    watals: null // null = volgt de prognose
+    watals: null, // null = volgt de prognose
+    tarieven: { standaard: STANDAARD_PRIJS, winkels: {} },
+    winkelLijst: [], // { id, naam } van alle bekende winkels, voor de tarieven
+    periode: 'dag'
   };
 
-  function leesPrijs() {
-    try { var v = parseFloat(window.localStorage.getItem(PRIJS_KEY)); if (v >= 0) return v; } catch (e) {}
-    return STANDAARD_PRIJS;
+  var BRON_LABEL = { zoeken: 'Zoekpagina', stijl: 'Zoeken met jouw stijl', selectie: 'Mijn selectie', gedeeld: 'Gedeelde selectie', onbekend: 'Onbekend (van vóór deze meting)' };
+  var PAGINA_LABEL = { '/': 'Homepage', '/aanbod': 'Zoeken', '/stijl': 'Ontdek je stijl', '/selectie': 'Mijn selectie', '/gedeeld': 'Gedeelde selectie', '/over-ons': 'Over FUSL', '/aanmelding-verzonden': 'Aanmelding verzonden' };
+
+  // Bedrag voor één winkel volgens de ingestelde tarieven.
+  function bedragWinkel(w) {
+    var t = state.tarieven.winkels[w.winkelId] || {};
+    var tarief = t.tarief != null ? t.tarief : state.tarieven.standaard;
+    if (t.gratisTot && state.maand <= t.gratisTot) return { bedrag: 0, tarief: tarief, notitie: 'gratis t/m ' + maandLabel(t.gratisTot) };
+    var b = w.kliks * tarief;
+    if (t.max && b > t.max) return { bedrag: t.max, tarief: tarief, notitie: 'maximum bereikt' };
+    return { bedrag: b, tarief: tarief, notitie: '' };
   }
+  function omzetTotaal(data) {
+    return data.winkels.reduce(function (s, w) { return s + bedragWinkel(w).bedrag; }, 0);
+  }
+  function apiFetch(pad, opties) {
+    opties = opties || {};
+    opties.headers = Object.assign({ 'x-rapport-sleutel': state.sleutel }, opties.headers || {});
+    return fetch(pad, opties).then(function (res) {
+      if (!res.ok) { var e = new Error('HTTP ' + res.status); e.status = res.status; throw e; }
+      return res.json();
+    });
+  }
+
   function euro(n) { return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n || 0); }
   function getal(n) { return Math.round(n || 0).toLocaleString('nl-NL'); }
 
@@ -116,12 +138,67 @@
         try { window.localStorage.setItem(SLEUTEL_KEY, sleutel); } catch (e) {}
         el.gate.hidden = true;
         el.dashboard.hidden = false;
-        verversAlles();
+        return laadTarieven().then(verversAlles, verversAlles);
       },
       function (err) {
         toonGate(foutmelding(err.code));
       }
     );
+  }
+
+  // ---- Tarieven ----
+
+  function laadTarieven() {
+    var winkels = {};
+    var bekend = function (id, naam) { if (id && !winkels[id]) winkels[id] = naam || id; };
+    return Promise.all([
+      apiFetch('api/tarieven').then(function (t) { state.tarieven = { standaard: t.standaard != null ? t.standaard : STANDAARD_PRIJS, winkels: t.winkels || {} }; }),
+      fetch('data/aanbod.json').then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { (d.listings || []).forEach(function (l) { bekend(l.storeId, l.storeName); }); }).catch(function () {}),
+      fetch('data/winkels.json').then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { (d.winkels || []).forEach(function (w) { bekend(w.id, w.naam); }); }).catch(function () {})
+    ]).then(function () {
+      Object.keys(state.tarieven.winkels).forEach(function (id) { bekend(id, id); });
+      state.winkelLijst = Object.keys(winkels).map(function (id) { return { id: id, naam: winkels[id] }; })
+        .sort(function (a, b) { return a.naam.localeCompare(b.naam, 'nl'); });
+      if (!state.prijsAangepast) { state.prijs = state.tarieven.standaard; el.prijs.value = state.prijs.toFixed(2); }
+      renderTarieven();
+    });
+  }
+
+  function renderTarieven() {
+    el.standaard.value = Number(state.tarieven.standaard).toFixed(2);
+    var aantalEigen = Object.keys(state.tarieven.winkels).length;
+    el.tarievenSamenvatting.textContent = euro(state.tarieven.standaard) + ' per klik' + (aantalEigen ? ' · ' + aantalEigen + (aantalEigen === 1 ? ' winkel' : ' winkels') + ' met eigen afspraak' : '');
+    el.tariefRijen.innerHTML = state.winkelLijst.map(function (w) {
+      var t = state.tarieven.winkels[w.id] || {};
+      var id = escapeHtml(w.id);
+      return '<tr data-winkel="' + id + '"><td>' + escapeHtml(w.naam) + '</td>' +
+        '<td><span class="kl-money-input"><span aria-hidden="true">€</span><input type="number" min="0" step="0.05" data-veld="tarief" aria-label="Tarief per klik voor ' + escapeHtml(w.naam) + '" placeholder="' + Number(state.tarieven.standaard).toFixed(2) + '" value="' + (t.tarief != null ? t.tarief : '') + '"></span></td>' +
+        '<td><span class="kl-money-input"><span aria-hidden="true">€</span><input type="number" min="0" step="5" data-veld="max" aria-label="Maximum per maand voor ' + escapeHtml(w.naam) + '" placeholder="geen" value="' + (t.max != null ? t.max : '') + '"></span></td>' +
+        '<td><input type="month" data-veld="gratisTot" aria-label="Gratis tot en met maand voor ' + escapeHtml(w.naam) + '" value="' + (t.gratisTot || '') + '"></td></tr>';
+    }).join('') || '<tr><td colspan="4">Nog geen winkels bekend.</td></tr>';
+  }
+
+  function slaTarievenOp() {
+    var nieuw = { standaard: parseFloat(String(el.standaard.value).replace(',', '.')), winkels: {} };
+    el.tariefRijen.querySelectorAll('tr[data-winkel]').forEach(function (tr) {
+      var r = {};
+      tr.querySelectorAll('input[data-veld]').forEach(function (inp) {
+        var v = String(inp.value).trim();
+        if (!v) return;
+        r[inp.getAttribute('data-veld')] = inp.type === 'month' ? v : parseFloat(v.replace(',', '.'));
+      });
+      if (Object.keys(r).length) nieuw.winkels[tr.getAttribute('data-winkel')] = r;
+    });
+    el.tarievenStatus.textContent = 'Opslaan…';
+    apiFetch('api/tarieven', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nieuw) })
+      .then(function (t) {
+        state.tarieven = { standaard: t.standaard, winkels: t.winkels || {} };
+        if (!state.prijsAangepast) { state.prijs = state.tarieven.standaard; el.prijs.value = state.prijs.toFixed(2); }
+        el.tarievenStatus.textContent = 'Opgeslagen ✓';
+        renderTarieven();
+        renderOmzet();
+      })
+      .catch(function () { el.tarievenStatus.textContent = 'Opslaan lukte niet. Probeer het opnieuw.'; });
   }
 
   // ---- Dashboard opbouwen ----
@@ -150,9 +227,17 @@
         if (!huidig) { toonFoutmelding(); return; }
 
         state.huidig = huidig;
-        state.trend = trendMaanden.map(function (m) { return { maand: m, totaal: bijMaand[m] ? bijMaand[m].totaal : null }; });
+        var huidigeMaandBewaard = state.maand;
+        state.trend = trendMaanden.map(function (m) {
+          if (!bijMaand[m]) return { maand: m, totaal: null };
+          state.maand = m; var o = omzetTotaal(bijMaand[m]); state.maand = huidigeMaandBewaard;
+          return { maand: m, totaal: bijMaand[m].totaal, omzet: o };
+        });
         renderStats(huidig, bijMaand[vorigeMaand]);
         renderTrend(state.trend);
+        renderDagen(huidig);
+        renderBronnen(huidig);
+        renderBezoek(huidig);
       })
       .catch(function () { toonFoutmelding(); });
   }
@@ -164,7 +249,9 @@
 
   function renderStats(data, vorigeData) {
     el.statTotal.textContent = getal(data.totaal);
-    el.statStores.textContent = String(data.winkels.length);
+    var bz = data.bezoek || { bezoekers: 0 };
+    el.statBezoekers.textContent = getal(bz.bezoekers);
+    el.statRatio.textContent = bz.bezoekers ? Math.round(data.totaal / bz.bezoekers * 100) + '% klikt door naar een winkel' : 'Nog geen bezoekers geteld';
     el.statTop.textContent = data.winkels.length ? data.winkels[0].winkel : '—';
 
     var delta = '';
@@ -185,19 +272,22 @@
   function renderOmzet() {
     var data = state.huidig;
     if (!data) return;
-    el.omzet.textContent = euro(data.totaal * state.prijs);
-    el.omzetUitleg.textContent = getal(data.totaal) + ' kliks × ' + euro(state.prijs);
+    var omzet = omzetTotaal(data);
+    var eigen = data.winkels.some(function (w) { return state.tarieven.winkels[w.winkelId]; });
+    el.omzet.textContent = euro(omzet);
+    el.omzetUitleg.textContent = eigen ? getal(data.totaal) + ' kliks, volgens de tarieven per winkel' : getal(data.totaal) + ' kliks × ' + euro(state.tarieven.standaard);
+    var perKlik = data.totaal ? omzet / data.totaal : state.tarieven.standaard;
 
     var prog = prognose(data);
     if (prog != null) {
       el.prognoseLabel.textContent = 'Prognose deze maand';
-      el.prognose.textContent = euro(prog * state.prijs);
+      el.prognose.textContent = euro(prog * perKlik);
       el.prognoseUitleg.textContent = 'ca. ' + getal(prog) + ' kliks bij het huidige tempo';
     } else {
       var trendMetData = state.trend.filter(function (r) { return r.totaal; });
       var gem = trendMetData.length ? trendMetData.reduce(function (t, r) { return t + r.totaal; }, 0) / trendMetData.length : 0;
       el.prognoseLabel.textContent = 'Gemiddeld per maand';
-      el.prognose.textContent = euro(gem * state.prijs);
+      el.prognose.textContent = euro(gem * perKlik);
       el.prognoseUitleg.textContent = 'ca. ' + getal(gem) + ' kliks, laatste 6 maanden';
     }
 
@@ -230,7 +320,7 @@
           '<span class="kl-bar-label">' + escapeHtml(w.winkel) + '</span>' +
           '<span class="kl-bar-track"><span class="kl-bar-fill" style="width:' + pct + '%"></span></span>' +
           '<span class="kl-bar-count">' + w.kliks.toLocaleString('nl-NL') + '</span>' +
-          '<span class="kl-bar-amount">' + euro(w.kliks * state.prijs) + '</span>' +
+          '<span class="kl-bar-amount">' + euro(bedragWinkel(w).bedrag) + (bedragWinkel(w).notitie ? '<small>' + escapeHtml(bedragWinkel(w).notitie) + '</small>' : '') + '</span>' +
           '<span class="kl-bar-chevron">▸</span>' +
         '</button>' +
         '<div class="kl-bar-detail"></div>';
@@ -249,7 +339,7 @@
               '<span class="kl-bar-detail-label">' + escapeHtml(p.product) + '</span>' +
               '<span class="kl-bar-detail-track"><span class="kl-bar-detail-fill" style="width:' + ppct + '%"></span></span>' +
               '<span class="kl-bar-detail-count">' + p.kliks.toLocaleString('nl-NL') + '</span>' +
-              '<span class="kl-bar-detail-count">' + euro(p.kliks * state.prijs) + '</span>' +
+              '<span class="kl-bar-detail-count">' + euro(p.kliks * bedragWinkel(w).tarief) + '</span>' +
             '</div>';
           }).join('');
           detail.dataset.gevuld = '1';
@@ -267,11 +357,12 @@
   function renderTabel(data) {
     if (!data.winkels.length) { el.tableWrap.hidden = true; el.tableWrap.innerHTML = ''; return; }
     var rijen = data.winkels.map(function (w) {
-      return '<tr><td>' + escapeHtml(w.winkel) + '</td><td class="kl-table-num">' + w.kliks.toLocaleString('nl-NL') + '</td><td class="kl-table-num">' + euro(w.kliks * state.prijs) + '</td></tr>';
+      var b = bedragWinkel(w);
+      return '<tr><td>' + escapeHtml(w.winkel) + '</td><td class="kl-table-num">' + w.kliks.toLocaleString('nl-NL') + '</td><td class="kl-table-num">' + euro(b.tarief) + '</td><td class="kl-table-num">' + euro(b.bedrag) + (b.notitie ? ' <small>(' + escapeHtml(b.notitie) + ')</small>' : '') + '</td></tr>';
     }).join('');
     el.tableWrap.innerHTML =
-      '<table class="kl-table"><thead><tr><th>Winkel</th><th class="kl-table-num">Kliks</th><th class="kl-table-num">Bedrag</th></tr></thead><tbody>' + rijen +
-      '</tbody><tfoot><tr><th>Totaal</th><th class="kl-table-num">' + getal(data.totaal) + '</th><th class="kl-table-num">' + euro(data.totaal * state.prijs) + '</th></tr></tfoot></table>';
+      '<table class="kl-table"><thead><tr><th>Winkel</th><th class="kl-table-num">Kliks</th><th class="kl-table-num">Tarief</th><th class="kl-table-num">Bedrag</th></tr></thead><tbody>' + rijen +
+      '</tbody><tfoot><tr><th>Totaal</th><th class="kl-table-num">' + getal(data.totaal) + '</th><th></th><th class="kl-table-num">' + euro(omzetTotaal(data)) + '</th></tr></tfoot></table>';
   }
 
   function renderTrend(reeks) {
@@ -309,11 +400,102 @@
       c.addEventListener('mouseenter', function (ev) {
         var i = Number(c.getAttribute('data-i'));
         var r = reeks[i];
-        toonTooltip(ev, maandLabel(r.maand) + ': ' + (r.totaal === null ? 'geen data' : r.totaal.toLocaleString('nl-NL') + ' kliks · ' + euro(r.totaal * state.prijs)));
+        toonTooltip(ev, maandLabel(r.maand) + ': ' + (r.totaal === null ? 'geen data' : r.totaal.toLocaleString('nl-NL') + ' kliks · ' + euro(r.omzet != null ? r.omzet : r.totaal * state.tarieven.standaard)));
       });
       c.addEventListener('mousemove', verplaatsTooltip);
       c.addEventListener('mouseleave', verbergTooltip);
     });
+  }
+
+  // ---- Per dag / per week ----
+
+  function dagenVanMaand(maand) {
+    var j = Number(maand.slice(0, 4)), m = Number(maand.slice(5, 7));
+    var n = new Date(j, m, 0).getDate();
+    var uit = [];
+    for (var d = 1; d <= n; d++) uit.push(maand + '-' + String(d).padStart(2, '0'));
+    return uit;
+  }
+  function weekVan(datum) { // ISO-weeknummer
+    var d = new Date(Date.UTC(+datum.slice(0, 4), +datum.slice(5, 7) - 1, +datum.slice(8, 10)));
+    var dag = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dag);
+    var jaarStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil(((d - jaarStart) / 86400000 + 1) / 7);
+  }
+
+  function renderDagen(data) {
+    var kliks = data.perDag || {};
+    var bezoek = (data.bezoek && data.bezoek.perDag) || {};
+    var vandaag = new Date();
+    var vandaagStr = vandaag.getFullYear() + '-' + String(vandaag.getMonth() + 1).padStart(2, '0') + '-' + String(vandaag.getDate()).padStart(2, '0');
+    var groepen = [];
+    dagenVanMaand(state.maand).forEach(function (d) {
+      var label = state.periode === 'week' ? 'wk ' + weekVan(d) : String(Number(d.slice(8, 10)));
+      var g = groepen[groepen.length - 1];
+      if (!g || g.label !== label) { g = { label: label, van: d, tot: d, kliks: 0, bezoekers: 0, toekomst: d > vandaagStr }; groepen.push(g); }
+      g.tot = d;
+      g.kliks += kliks[d] || 0;
+      g.bezoekers += (bezoek[d] && bezoek[d].bezoekers) || 0;
+      if (d <= vandaagStr) g.toekomst = false;
+    });
+
+    var smal = el.dagen.clientWidth && el.dagen.clientWidth < 520;
+    var w = smal ? 360 : 720, h = smal ? 230 : 200, padL = 30, padR = 6, padT = 12, padB = 26;
+    var maxK = Math.max.apply(null, groepen.map(function (g) { return Math.max(g.kliks, g.bezoekers); }).concat([4]));
+    var ruimte = (w - padL - padR) / groepen.length;
+    var bw = Math.max(2, Math.min(18, ruimte * 0.36));
+    var y = function (v) { return padT + (h - padT - padB) * (1 - v / maxK); };
+    var stap = maxK <= 5 ? 1 : Math.ceil(maxK / 4);
+    var raster = '';
+    for (var v = 0; v <= maxK; v += stap) {
+      raster += '<line x1="' + padL + '" x2="' + (w - padR) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '" stroke="rgba(58,44,32,0.08)"/>' +
+        '<text x="' + (padL - 6) + '" y="' + (y(v) + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="rgba(58,44,32,0.55)" font-family="Manrope, sans-serif">' + v + '</text>';
+    }
+    var labelElke = state.periode === 'week' ? 1 : (groepen.length > 20 ? (smal ? 7 : 5) : 1);
+    var staven = groepen.map(function (g, i) {
+      var x = padL + ruimte * i + ruimte / 2;
+      var t = g.toekomst ? ' opacity="0.25"' : '';
+      return '<g class="kl-dag" data-i="' + i + '">' +
+        '<rect x="' + (x - bw - 1).toFixed(1) + '" y="' + y(g.bezoekers).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + (h - padB - y(g.bezoekers)).toFixed(1) + '" rx="2" fill="#9fc99e"' + t + '/>' +
+        '<rect x="' + (x + 1).toFixed(1) + '" y="' + y(g.kliks).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + (h - padB - y(g.kliks)).toFixed(1) + '" rx="2" fill="#213b1e"' + t + '/>' +
+        '<rect x="' + (x - ruimte / 2).toFixed(1) + '" y="' + padT + '" width="' + ruimte.toFixed(1) + '" height="' + (h - padT - padB) + '" fill="transparent"/>' +
+        ((i % labelElke === 0 || i === groepen.length - 1) ? '<text x="' + x.toFixed(1) + '" y="' + (h - 8) + '" text-anchor="middle" font-size="11" fill="rgba(58,44,32,0.55)" font-family="Manrope, sans-serif">' + g.label + '</text>' : '') +
+        '</g>';
+    }).join('');
+    el.dagen.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Bezoekers en doorverwijzingen ' + (state.periode === 'week' ? 'per week' : 'per dag') + ' in ' + maandLabel(state.maand) + '">' + raster + staven + '</svg>';
+    el.dagen.querySelectorAll('.kl-dag').forEach(function (gEl) {
+      var g = groepen[+gEl.getAttribute('data-i')];
+      var datum = function (d) { return new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'short' }).format(new Date(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10))); };
+      var tekst = (g.van === g.tot ? datum(g.van) : g.label + ' (' + datum(g.van) + ' – ' + datum(g.tot) + ')') + ': ' +
+        g.bezoekers + ' bezoekers, ' + g.kliks + ' doorverwijzingen' + (g.bezoekers ? ' (' + Math.round(g.kliks / g.bezoekers * 100) + '%)' : '');
+      gEl.addEventListener('mouseenter', function (ev) { toonTooltip(ev, tekst); });
+      gEl.addEventListener('mousemove', verplaatsTooltip);
+      gEl.addEventListener('mouseleave', verbergTooltip);
+    });
+  }
+
+  // ---- Herkomst van kliks en bezoekers ----
+
+  function balkLijst(paren, totaal, leeg) {
+    if (!paren.length) return '<p class="kl-empty-msg">' + leeg + '</p>';
+    var max = paren[0][1] || 1;
+    return paren.map(function (p) {
+      return '<div class="kl-mini-row"><span class="kl-mini-label">' + escapeHtml(p[0]) + '</span>' +
+        '<span class="kl-mini-track"><span class="kl-mini-fill" style="width:' + Math.max(3, Math.round(p[1] / max * 100)) + '%"></span></span>' +
+        '<span class="kl-mini-count">' + getal(p[1]) + '</span><span class="kl-mini-pct">' + (totaal ? Math.round(p[1] / totaal * 100) : 0) + '%</span></div>';
+    }).join('');
+  }
+  function gesorteerd(obj, labels) {
+    return Object.keys(obj || {}).map(function (k) { return [labels && labels[k] ? labels[k] : k, obj[k]]; }).sort(function (a, b) { return b[1] - a[1]; });
+  }
+  function renderBronnen(data) {
+    el.bronnen.innerHTML = balkLijst(gesorteerd(data.perBron, BRON_LABEL), data.totaal, 'Nog geen doorverwijzingen deze maand.');
+  }
+  function renderBezoek(data) {
+    var bz = data.bezoek || { bezoekers: 0, weergaven: 0, herkomst: {}, paginas: {} };
+    el.herkomst.innerHTML = balkLijst(gesorteerd(bz.herkomst), bz.bezoekers, 'Nog geen bezoekers geteld deze maand. De teller loopt vanaf het moment dat deze versie live staat.');
+    el.paginas.innerHTML = balkLijst(gesorteerd(bz.paginas, PAGINA_LABEL).slice(0, 6), bz.weergaven, 'Nog geen paginaweergaven.');
   }
 
   // ---- Tooltip ----
@@ -348,13 +530,14 @@
     var data = state.huidig;
     if (!data) return;
     var q = function (x) { return '"' + String(x).replace(/"/g, '""') + '"'; };
-    var bedrag = function (n) { return (n * state.prijs).toFixed(2).replace('.', ','); };
-    var regels = ['maand;winkel;stuk;kliks;prijs per klik;bedrag'];
+    var nl = function (n) { return n.toFixed(2).replace('.', ','); };
+    var regels = ['maand;winkel;stuk;kliks;tarief per klik;bedrag;opmerking'];
     data.winkels.forEach(function (w) {
+      var b = bedragWinkel(w);
       w.producten.forEach(function (p) {
-        regels.push([state.maand, q(w.winkel), q(p.product), p.kliks, state.prijs.toFixed(2).replace('.', ','), bedrag(p.kliks)].join(';'));
+        regels.push([state.maand, q(w.winkel), q(p.product), p.kliks, nl(b.tarief), nl(p.kliks * b.tarief), ''].join(';'));
       });
-      regels.push([state.maand, q(w.winkel), q('Totaal ' + w.winkel), w.kliks, state.prijs.toFixed(2).replace('.', ','), bedrag(w.kliks)].join(';'));
+      regels.push([state.maand, q(w.winkel), q('Totaal ' + w.winkel), w.kliks, nl(b.tarief), nl(b.bedrag), q(b.notitie)].join(';'));
     });
     var blob = new Blob(['\ufeff' + regels.join('\n')], { type: 'text/csv;charset=utf-8' });
     var a = document.createElement('a');
@@ -384,7 +567,6 @@
     el.lockBtn = document.getElementById('kl-lock-btn');
     el.statTotal = document.getElementById('kl-stat-total');
     el.statDelta = document.getElementById('kl-stat-delta');
-    el.statStores = document.getElementById('kl-stat-stores');
     el.statTop = document.getElementById('kl-stat-top');
     el.bars = document.getElementById('kl-bars');
     el.tableToggle = document.getElementById('kl-table-toggle');
@@ -402,13 +584,31 @@
     el.slider = document.getElementById('kl-watals-slider');
     el.calcMaand = document.getElementById('kl-calc-maand');
     el.calcJaar = document.getElementById('kl-calc-jaar');
+    el.statBezoekers = document.getElementById('kl-stat-bezoekers');
+    el.statRatio = document.getElementById('kl-stat-ratio');
+    el.standaard = document.getElementById('kl-standaard');
+    el.tariefRijen = document.getElementById('kl-tarief-rijen');
+    el.tarievenStatus = document.getElementById('kl-tarieven-status');
+    el.tarievenSamenvatting = document.getElementById('kl-tarieven-samenvatting');
+    el.dagen = document.getElementById('kl-dagen');
+    el.bronnen = document.getElementById('kl-bronnen');
+    el.herkomst = document.getElementById('kl-herkomst');
+    el.paginas = document.getElementById('kl-paginas');
+    document.getElementById('kl-tarieven-opslaan').addEventListener('click', slaTarievenOp);
+    document.querySelectorAll('[data-periode]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        state.periode = b.getAttribute('data-periode');
+        document.querySelectorAll('[data-periode]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+        if (state.huidig) renderDagen(state.huidig);
+      });
+    });
 
     el.prijs.value = state.prijs.toFixed(2);
     el.prijs.addEventListener('input', function () {
       var v = parseFloat(String(el.prijs.value).replace(',', '.'));
       if (!(v >= 0)) return;
       state.prijs = v;
-      try { window.localStorage.setItem(PRIJS_KEY, String(v)); } catch (e) {}
+      state.prijsAangepast = true;
       renderOmzet();
     });
     el.watals.addEventListener('input', function () {

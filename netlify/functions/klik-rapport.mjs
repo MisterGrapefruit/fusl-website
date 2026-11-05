@@ -1,29 +1,56 @@
-// /api/klik-rapport?maand=2026-11&sleutel=...[&formaat=csv][&test=1]
-// Overzicht van doorverwijzingen per winkel en per stuk, als basis voor de
-// maandfactuur per klik. Beveiligd met de omgevingsvariabele RAPPORT_SLEUTEL
-// (instellen in Netlify: Site configuration > Environment variables).
+// /api/klik-rapport?maand=2026-11[&formaat=csv][&test=1]   (rapportsleutel via header x-rapport-sleutel)
+// Overzicht van doorverwijzingen per winkel, per stuk, per dag en per bron,
+// plus de bezoekers van FUSL's eigen teller. Basis voor de maandfactuur per klik.
 
 import { getStore } from '@netlify/blobs';
-import { datumNL, terugDeel, laadAanbod } from '../lib/winkelkliks.mjs';
+import { datumNL, terugDeel, laadAanbod, controleerSleutel } from '../lib/winkelkliks.mjs';
+
+async function alleSleutels(store, prefix) {
+  const uit = [];
+  for await (const pagina of store.list({ prefix, paginate: true })) pagina.blobs.forEach((b) => uit.push(b.key));
+  return uit;
+}
 
 export default async (req) => {
+  const fout = controleerSleutel(req);
+  if (fout) return fout;
   const url = new URL(req.url);
-  const geheim = process.env.RAPPORT_SLEUTEL;
-  if (!geheim) return new Response('Stel eerst RAPPORT_SLEUTEL in bij de Netlify-omgevingsvariabelen.', { status: 503 });
-  const gegeven = url.searchParams.get('sleutel') || req.headers.get('x-rapport-sleutel');
-  if (gegeven !== geheim) return new Response('Geen toegang.', { status: 401 });
 
   const maand = /^\d{4}-\d{2}$/.test(url.searchParams.get('maand') || '') ? url.searchParams.get('maand') : datumNL().slice(0, 7);
   const store = getStore({ name: url.searchParams.get('test') ? 'winkelkliks-test' : 'winkelkliks', consistency: 'strong' });
 
+  // ---- Kliks naar winkels ----
   const winkels = {};
-  for await (const pagina of store.list({ prefix: `kliks/${maand}/`, paginate: true })) {
-    for (const b of pagina.blobs) {
-      const [, , winkel, product] = b.key.split('/');
-      const w = (winkels[winkel] = winkels[winkel] || { kliks: 0, producten: {} });
-      w.kliks += 1;
-      w.producten[product] = (w.producten[product] || 0) + 1;
-    }
+  const perDag = {};
+  const perBron = {};
+  for (const key of await alleSleutels(store, `kliks/${maand}/`)) {
+    const [, , winkel, product, rest = ''] = key.split('/');
+    const [ts, , bron = 'onbekend'] = rest.split('-');
+    const w = (winkels[winkel] = winkels[winkel] || { kliks: 0, producten: {} });
+    w.kliks += 1;
+    w.producten[product] = (w.producten[product] || 0) + 1;
+    const dag = Number(ts) ? datumNL(new Date(Number(ts))) : null;
+    if (dag) perDag[dag] = (perDag[dag] || 0) + 1;
+    perBron[bron] = (perBron[bron] || 0) + 1;
+  }
+
+  // ---- Bezoekers (eigen teller) ----
+  const bezoek = { bezoekers: 0, weergaven: 0, perDag: {}, herkomst: {}, paginas: {} };
+  for (const key of await alleSleutels(store, `bezoekers/${maand}-`)) {
+    const [, dag, bron] = key.split('/');
+    bezoek.bezoekers += 1;
+    const d = (bezoek.perDag[dag] = bezoek.perDag[dag] || { bezoekers: 0, weergaven: 0 });
+    d.bezoekers += 1;
+    const b = terugDeel(bron);
+    bezoek.herkomst[b] = (bezoek.herkomst[b] || 0) + 1;
+  }
+  for (const key of await alleSleutels(store, `pv/${maand}-`)) {
+    const [, dag, pad] = key.split('/');
+    bezoek.weergaven += 1;
+    const d = (bezoek.perDag[dag] = bezoek.perDag[dag] || { bezoekers: 0, weergaven: 0 });
+    d.weergaven += 1;
+    const p = terugDeel(pad);
+    bezoek.paginas[p] = (bezoek.paginas[p] || 0) + 1;
   }
 
   let aanbod = [];
@@ -48,7 +75,8 @@ export default async (req) => {
       headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="fusl-kliks-${maand}.csv"` }
     });
   }
-  return Response.json({ maand, totaal: rijen.reduce((s, r) => s + r.kliks, 0), winkels: rijen });
+  return Response.json({ maand, totaal: rijen.reduce((s, r) => s + r.kliks, 0), winkels: rijen, perDag, perBron, bezoek },
+    { headers: { 'Cache-Control': 'no-store' } });
 };
 
 export const config = { path: '/api/klik-rapport' };

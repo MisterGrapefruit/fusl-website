@@ -43,7 +43,7 @@
             '<button type="button" class="gd-up" data-act="stem" data-id="' + esc(p.id) + '" data-v="op" aria-pressed="' + (v === 'op') + '"' + dis + '>' + U.THUMB + '<span>Mooi</span></button>' +
             '<button type="button" class="gd-down" data-act="stem" data-id="' + esc(p.id) + '" data-v="neer" aria-pressed="' + (v === 'neer') + '"' + dis + '>' + U.THUMB + '<span>Liever niet</span></button>' +
           '</div>' +
-          (p.link && !p.verkocht ? '<a class="text-link gd-shop" href="/naar/' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener sponsored nofollow">Bekijk bij ' + esc(p.store) + ' →</a>' : '') +
+          (p.link && !p.verkocht ? '<a class="text-link gd-shop" href="/naar/' + encodeURIComponent(p.id) + '?bron=gedeeld" target="_blank" rel="noopener sponsored nofollow">Bekijk bij ' + esc(p.store) + ' →</a>' : '') +
         '</div></article>';
     }).join('') + '</div>';
     html += '<div class="gd-invite"><img src="images/capy-face.png" alt=""><div><strong>Zelf ook aan het inrichten?</strong>' +

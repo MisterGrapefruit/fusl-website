@@ -12,10 +12,11 @@
 // dagen niet aan elkaar te koppelen. Hashes ouder dan twee dagen ruimen we op.
 
 import { getStore } from '@netlify/blobs';
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 
 export const DAG_MS = 24 * 60 * 60 * 1000;
-const BOTS = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|discord|curl|wget|python|headless/i;
+export const BRONNEN = ['zoeken', 'stijl', 'selectie', 'gedeeld'];
+export const BOTS = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|discord|curl|wget|python|headless/i;
 
 export function storeVoor(context) {
   // Klikken op een testversie (deploy preview) tellen apart, zodat de echte
@@ -51,14 +52,14 @@ export async function laadAanbod(origin) {
   return Array.isArray(data.listings) ? data.listings : [];
 }
 
-function hash(...delen) {
+export function hash(...delen) {
   const geheim = process.env.KLIK_GEHEIM || 'fusl-standaard-geheim-vervang-mij';
   return createHash('sha256').update([geheim, ...delen].join('|')).digest('hex').slice(0, 32);
 }
 
 // Telt een klik, tenzij het een bot is of dezelfde bezoeker binnen 24 uur al
 // op dit stuk klikte. Geeft true terug als de klik is meegeteld.
-export async function telKlik(store, { req, context, listing }) {
+export async function telKlik(store, { req, context, listing, bron }) {
   const ua = req.headers.get('user-agent') || '';
   if (!ua || BOTS.test(ua)) return false;
   const ip = (context && context.ip) || req.headers.get('x-nf-client-connection-ip') || '';
@@ -75,7 +76,9 @@ export async function telKlik(store, { req, context, listing }) {
   await store.set(sleutelVandaag, String(nu.getTime()));
 
   const maand = vandaag.slice(0, 7);
-  const sleutel = `kliks/${maand}/${veiligDeel(listing.storeId)}/${veiligDeel(listing.id)}/${nu.getTime()}-${randomBytes(3).toString('hex')}`;
+  // Laatste deel: <tijd>-<willekeurig>-<bron>; de bron zegt via welk deel van de site de klik kwam.
+  const b = BRONNEN.includes(bron) ? bron : 'onbekend';
+  const sleutel = `kliks/${maand}/${veiligDeel(listing.storeId)}/${veiligDeel(listing.id)}/${nu.getTime()}-${randomBytes(3).toString('hex')}-${b}`;
   await store.set(sleutel, '1');
 
   if (Math.random() < 0.05) await ruimOp(store, gisteren).catch(() => {});
@@ -89,4 +92,16 @@ async function ruimOp(store, gisteren) {
       if (dag < gisteren) await store.delete(b.key);
     }
   }
+}
+
+// Controle van de rapportsleutel (dashboard, tarieven). Geeft een Response bij
+// een fout, of null als de sleutel klopt.
+export function controleerSleutel(req) {
+  const geheim = process.env.RAPPORT_SLEUTEL;
+  if (!geheim) return new Response('Stel eerst RAPPORT_SLEUTEL in bij de Netlify-omgevingsvariabelen.', { status: 503 });
+  const url = new URL(req.url);
+  const gegeven = url.searchParams.get('sleutel') || req.headers.get('x-rapport-sleutel') || '';
+  const a = createHash('sha256').update(gegeven).digest(), b2 = createHash('sha256').update(geheim).digest();
+  if (!timingSafeEqual(a, b2)) return new Response('Geen toegang.', { status: 401 });
+  return null;
 }

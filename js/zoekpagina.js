@@ -306,7 +306,7 @@
     var icon = '<svg aria-hidden="true" width="84" height="84" viewBox="0 0 24 24" fill="none" stroke="' + ink + '" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">' + (CAT_ICON[p.category] || CAT_ICON.kast) + '</svg>';
     var cta;
     if (p.productUrl) {
-      cta = '<a class="zk-cta" href="/naar/' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener sponsored nofollow" data-click="' + esc(p.id) + '">Bekijk bij ' + esc(p.store) + ' →</a>';
+      cta = '<a class="zk-cta" href="/naar/' + encodeURIComponent(p.id) + '?bron=' + (mixActive() ? 'stijl' : 'zoeken') + '" target="_blank" rel="noopener sponsored nofollow" data-click="' + esc(p.id) + '">Bekijk bij ' + esc(p.store) + ' →</a>';
     } else {
       cta = '<span class="zk-cta zk-cta-off" title="Voorbeeldstuk: nog niet gekoppeld aan een winkel">Bekijk bij ' + esc(p.store) + ' →</span>';
     }

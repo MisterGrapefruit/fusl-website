@@ -1,4 +1,4 @@
-// /naar/<product-id>
+// /naar/<product-id>?bron=zoeken|stijl|selectie|gedeeld
 // Stuurt de bezoeker door naar het stuk op de site van de winkel (met
 // UTM-codes), en telt de doorverwijzing voor de afrekening per klik.
 // Lukt het tellen niet, dan wordt de bezoeker gewoon doorgestuurd.
@@ -25,7 +25,7 @@ export default async (req, context) => {
   try { doel = metUtm(listing.productUrl, listing.category); } catch (e) { return terug(); }
 
   try {
-    await telKlik(storeVoor(context), { req, context, listing });
+    await telKlik(storeVoor(context), { req, context, listing, bron: new URL(req.url).searchParams.get('bron') });
   } catch (e) {
     console.error('klik niet geteld', e);
   }

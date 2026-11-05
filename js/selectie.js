@@ -198,7 +198,7 @@
         (sold
           ? '<a class="text-link" href="aanbod.html?q=' + encodeURIComponent((p.style || '') + ' ' + (p.category || '')) + '">Bekijk vergelijkbare stukken →</a>'
           : '<div class="sl-actions">' +
-              (p.link ? '<a class="zk-cta" href="/naar/' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener sponsored nofollow" data-click="' + esc(p.id) + '">Bekijk bij ' + esc(p.store) + ' →</a>'
+              (p.link ? '<a class="zk-cta" href="/naar/' + encodeURIComponent(p.id) + '?bron=selectie" target="_blank" rel="noopener sponsored nofollow" data-click="' + esc(p.id) + '">Bekijk bij ' + esc(p.store) + ' →</a>'
                       : '<span class="zk-cta zk-cta-off" title="Voorbeeldstuk: nog niet gekoppeld aan een winkel">Bekijk bij ' + esc(p.store) + ' →</span>') +
               '<button type="button" class="sl-pick" data-act="kies" data-id="' + esc(p.id) + '" aria-pressed="' + picked + '"' + (!picked && ui.compare.length >= 3 ? ' disabled' : '') + '><span class="zk-box' + (picked ? ' on' : '') + '"></span>Vergelijk</button>' +
             '</div>') +
@@ -295,7 +295,7 @@
       }).join('') + '</tr></thead><tbody>' + rows.map(function (r) {
         return '<tr><th scope="row">' + r[0] + '</th>' + cols.map(function (p) { return '<td>' + esc(r[1](p)) + '</td>'; }).join('') + '</tr>';
       }).join('') + '<tr><td></td>' + cols.map(function (p) {
-        return '<td>' + (p.link ? '<a class="zk-cta" href="/naar/' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener sponsored nofollow" data-click="' + esc(p.id) + '">Bekijk bij ' + esc(p.store) + ' →</a>' : '<span class="zk-cta zk-cta-off">Bekijk bij ' + esc(p.store) + ' →</span>') + '</td>';
+        return '<td>' + (p.link ? '<a class="zk-cta" href="/naar/' + encodeURIComponent(p.id) + '?bron=selectie" target="_blank" rel="noopener sponsored nofollow" data-click="' + esc(p.id) + '">Bekijk bij ' + esc(p.store) + ' →</a>' : '<span class="zk-cta zk-cta-off">Bekijk bij ' + esc(p.store) + ' →</span>') + '</td>';
       }).join('') + '</tr></tbody></table></div>';
   }
 

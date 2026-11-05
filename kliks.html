@@ -63,8 +63,9 @@
 
     <div class="kl-stat-row">
       <div class="kl-stat-tile">
-        <div class="kl-stat-label">Winkels met kliks</div>
-        <div class="kl-stat-value" id="kl-stat-stores">–</div>
+        <div class="kl-stat-label">Bezoekers</div>
+        <div class="kl-stat-value" id="kl-stat-bezoekers">–</div>
+        <div class="kl-stat-delta" id="kl-stat-ratio"></div>
       </div>
       <div class="kl-stat-tile">
         <div class="kl-stat-label">Meeste kliks</div>
@@ -81,9 +82,9 @@
       <h2 id="kl-calc-title">Omzet berekenen</h2>
       <div class="kl-calc-grid">
         <label class="kl-field">
-          <span>Vergoeding per klik</span>
+          <span>Vergoeding per klik (rekenvoorbeeld)</span>
           <span class="kl-money-input"><span aria-hidden="true">€</span><input type="number" id="kl-prijs" min="0" step="0.05" inputmode="decimal" value="0.45" aria-describedby="kl-prijs-hint"></span>
-          <small id="kl-prijs-hint">Wordt in deze browser onthouden.</small>
+          <small id="kl-prijs-hint">Begint bij je standaardtarief. Echte tarieven stel je hieronder in.</small>
         </label>
         <label class="kl-field">
           <span>Kliks per maand (wat als?)</span>
@@ -111,6 +112,44 @@
       <div id="kl-table-wrap" class="kl-table-wrap" hidden></div>
       <p class="kl-empty-msg" id="kl-empty" hidden>Nog geen doorverwijzingen geteld deze maand.</p>
     </section>
+
+    <section class="kl-card">
+      <details class="kl-tarieven" id="kl-tarieven">
+        <summary><h2>Tarieven per winkel</h2><span id="kl-tarieven-samenvatting"></span></summary>
+        <p class="kl-sub">Laat een veld leeg om het standaardtarief te gebruiken. Een maximum begrenst het bedrag per maand; in een gratis periode (bijvoorbeeld de pilot) is het bedrag € 0. Tarieven worden opgeslagen op de server en zijn niet openbaar.</p>
+        <label class="kl-field kl-field-inline"><span>Standaardtarief per klik</span>
+          <span class="kl-money-input"><span aria-hidden="true">€</span><input type="number" id="kl-standaard" min="0" step="0.05" inputmode="decimal"></span></label>
+        <div class="kl-table-wrap"><table class="kl-table kl-tarief-tabel"><thead><tr><th>Winkel</th><th>Tarief per klik</th><th>Maximum per maand</th><th>Gratis t/m</th></tr></thead><tbody id="kl-tarief-rijen"></tbody></table></div>
+        <div class="kl-tarief-acties"><button type="button" class="btn btn-green" id="kl-tarieven-opslaan">Tarieven opslaan</button><span id="kl-tarieven-status" role="status"></span></div>
+      </details>
+    </section>
+
+    <section class="kl-card">
+      <div class="kl-section-head">
+        <h2>Per dag</h2>
+        <div class="kl-seg" role="group" aria-label="Indeling">
+          <button type="button" data-periode="dag" aria-pressed="true">Per dag</button>
+          <button type="button" data-periode="week" aria-pressed="false">Per week</button>
+        </div>
+      </div>
+      <div class="kl-legend"><span><i class="kl-dot kl-dot-kliks"></i>Doorverwijzingen naar winkels</span><span><i class="kl-dot kl-dot-bezoek"></i>Bezoekers</span></div>
+      <div id="kl-dagen" class="kl-trend"></div>
+    </section>
+
+    <div class="kl-two">
+      <section class="kl-card">
+        <h2>Waar komen de kliks vandaan?</h2>
+        <p class="kl-sub kl-sub-small">Via welk deel van FUSL bezoekers doorklikten naar een winkel.</p>
+        <div id="kl-bronnen"></div>
+      </section>
+      <section class="kl-card">
+        <h2>Hoe vinden bezoekers FUSL?</h2>
+        <p class="kl-sub kl-sub-small">Eigen teller, zonder cookies. Eén bezoeker = één persoon per dag.</p>
+        <div id="kl-herkomst"></div>
+        <h3 class="kl-h3">Meest bekeken pagina's</h3>
+        <div id="kl-paginas"></div>
+      </section>
+    </div>
 
     <section class="kl-card">
       <h2>Doorverwijzingen en omzet, laatste 6 maanden</h2>

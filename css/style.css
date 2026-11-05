@@ -1708,3 +1708,17 @@ img { max-width: 100%; display: block; }
   .kl-tarief-tabel td:first-child { grid-column: 1 / -1; font-weight: 700; }
 }
 .kl-tarief-tabel input::placeholder { color: rgba(58,44,32,0.35); font-weight: 500; }
+
+/* Privacyverklaring */
+.pv .container { max-width: 1000px; }
+.pv h2 { margin-top: 32px; }
+.pv p, .pv li { line-height: 1.6; }
+.pv-date { color: rgba(58,44,32,0.6); font-size: 14px; }
+.pv-todo { }
+.pv-table-wrap { overflow-x: auto; margin: 16px 0; background: #fff; border-radius: 18px; padding: 6px 12px; }
+.pv-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px; }
+.pv-table-small { min-width: 0; }
+.pv-table th, .pv-table td { text-align: left; vertical-align: top; padding: 10px; border-bottom: 1px solid var(--tan); line-height: 1.45; }
+.pv-table thead th { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.03em; color: rgba(58,44,32,0.6); }
+.pv-table tbody th { color: var(--brand-darker); }
+.pv-table tr:last-child th, .pv-table tr:last-child td { border-bottom: 0; }

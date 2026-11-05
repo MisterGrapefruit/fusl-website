@@ -57,7 +57,9 @@
     released: false,
     open: null,
     sort: 'relevantie',
-    pcError: ''
+    pcError: '',
+    pcDraft: null,   // wat er nu in het postcodeveld staat (nog niet opgezocht)
+    pcBusy: false
   };
   if (arriveFromStyle) state.f.styles = mixNames.slice();
 
@@ -191,7 +193,14 @@
       { key: 'afstand', name: 'Afstand', value: f.maxKm ? 'binnen ' + f.maxKm + ' km' : '', postcode: true,
         options: [[null, 'Elke afstand'], [10, 'Binnen 10 km'], [25, 'Binnen 25 km'], [50, 'Binnen 50 km']].map(function (o) {
           return { label: o[1], on: f.maxKm === o[0], round: true, pick: function () {
-            if (o[0] && !location_) { state.pcError = 'Vul eerst je postcode in, bijvoorbeeld 1234 AB.'; render(); var el = document.getElementById('zk-postcode'); if (el) el.focus(); return; }
+            // Een getypte (nieuwe) postcode eerst opzoeken, ook als je niet op OK drukte.
+            var typed = state.pcDraft;
+            var isNew = typed != null && fuslNormalizePostcode(typed) && (!location_ || fuslNormalizePostcode(typed) !== location_.postcode);
+            if (o[0] && isNew) { lookupPostcode(typed, o[0]); return; }
+            if (o[0] && !location_) {
+              state.pcError = typed ? 'Dit lijkt geen postcode. Probeer bijvoorbeeld 1234 AB.' : 'Vul eerst je postcode in, bijvoorbeeld 1234 AB.';
+              render(); var el = document.getElementById('zk-postcode'); if (el) el.focus(); return;
+            }
             setFilters({ maxKm: o[0] });
           } };
         }),
@@ -216,14 +225,16 @@
       if (open) {
         var pc = '';
         if (d.postcode) {
-          var help = state.pcError
+          var help = state.pcBusy
+            ? '<span class="zk-pc-help" role="status">Postcode opzoeken…</span>'
+            : state.pcError
             ? '<span class="zk-pc-help zk-pc-error" role="alert">' + esc(state.pcError) + '</span>'
             : (location_
               ? '<span class="zk-pc-help">' + esc(location_.postcode + (location_.plaats ? ', ' + location_.plaats : '')) + ' · <button type="button" class="zk-link-btn zk-small" data-pc-forget>vergeet</button></span>'
               : '<span class="zk-pc-help">Alleen nodig om afstanden te berekenen. We bewaren hem alleen in je browser.</span>');
           pc = '<form class="zk-pc" data-pc-form>' +
             '<label for="zk-postcode">Jouw postcode</label>' +
-            '<div class="zk-pc-row"><input id="zk-postcode" type="text" inputmode="text" autocomplete="postal-code" placeholder="1234 AB" value="' + esc(location_ ? location_.postcode : '') + '">' +
+            '<div class="zk-pc-row"><input id="zk-postcode" type="text" inputmode="text" autocomplete="postal-code" placeholder="1234 AB" value="' + esc(state.pcDraft != null ? state.pcDraft : (location_ ? location_.postcode : '')) + '">' +
             '<button type="submit" class="zk-pc-go">OK</button></div>' + help + '</form>';
         }
         var opts = d.options.map(function (o, oi) {
@@ -415,25 +426,35 @@
       closeMenus(true);
     } else if (t.hasAttribute('data-pc-forget')) {
       location_ = null; fuslSaveLocation(null); resetKm();
+      state.pcDraft = null;
       setFilters({ maxKm: null });
     }
+  });
+  // Postcode opzoeken en daarna de gekozen afstand (standaard 25 km) toepassen.
+  function lookupPostcode(val, km) {
+    if (!fuslNormalizePostcode(val)) { state.pcError = 'Dit lijkt geen postcode. Probeer bijvoorbeeld 1234 AB.'; render(); return; }
+    state.pcBusy = true; state.pcError = '';
+    render();
+    fuslGeocodePostcode(val).then(function (loc) {
+      location_ = loc; fuslSaveLocation(loc); resetKm();
+      state.pcDraft = null;
+      state.f = Object.assign({}, state.f, { maxKm: km || state.f.maxKm || 25 });
+    }).catch(function () {
+      state.pcError = 'We konden deze postcode niet vinden. Controleer hem of probeer het later nog eens.';
+    }).then(function () {
+      state.pcBusy = false;
+      render();
+      var el = document.querySelector('.zk-opt[aria-pressed="true"]') || document.getElementById('zk-postcode');
+      if (el && state.open) el.focus();
+    });
+  }
+  filterbar.addEventListener('input', function (e) {
+    if (e.target.id === 'zk-postcode') { state.pcDraft = e.target.value; if (state.pcError) { state.pcError = ''; var h = document.querySelector('.zk-pc-error'); if (h) h.remove(); } }
   });
   filterbar.addEventListener('submit', function (e) {
     if (!e.target.hasAttribute('data-pc-form')) return;
     e.preventDefault();
-    var val = document.getElementById('zk-postcode').value;
-    if (!fuslNormalizePostcode(val)) { state.pcError = 'Dit lijkt geen postcode. Probeer bijvoorbeeld 1234 AB.'; render(); return; }
-    state.pcError = 'Even zoeken…';
-    render();
-    fuslGeocodePostcode(val).then(function (loc) {
-      location_ = loc; fuslSaveLocation(loc); resetKm();
-      state.pcError = '';
-      if (!state.f.maxKm) state.f = Object.assign({}, state.f, { maxKm: 25 });
-      render();
-    }).catch(function () {
-      state.pcError = 'We konden deze postcode niet vinden. Controleer hem of probeer het later nog eens.';
-      render();
-    });
+    lookupPostcode(document.getElementById('zk-postcode').value, state.f.maxKm);
   });
 
   function closeMenus(focusButton) {
